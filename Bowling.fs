@@ -6,3 +6,7 @@
 
 : score ( game -- score ) 
     ;
+
+: last-throw ( game -- pins,flag )
+    false ;
+

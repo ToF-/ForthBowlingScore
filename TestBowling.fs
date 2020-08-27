@@ -10,5 +10,10 @@ t{ ." knock-down increases the score by the number of pins knocked down " cr
     4 knock-down
     score 4 ?s
 }t
+t{ ." last-throw gives a false flag if we are at the beginning of a new frame " cr
+    start-game 
+    last-throw ?false 
+    clearstack
+}t
 .fut-tests-result cr bye
 
