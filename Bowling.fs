@@ -1,9 +1,13 @@
 : start-game ( -- game )
     0 ;
 
+: last-throw! ( game,pins -- game )
+    1+ 16 lshift rot or ;
+
 : knock-down ( game,pins -- game )
-    dup 1+ 16 lshift 
-    rot or + ;
+    dup -rot
+    last-throw!
+    + ;
 
 : score ( game -- score ) 
     511 and ;
