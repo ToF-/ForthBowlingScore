@@ -19,5 +19,11 @@ t{ ." last-throw gives the number of pins knocked down on last throw and a true 
     7 knock-down
     last-throw ?true 7 ?s
 }t
+t{ ." after the second throw, last-throw gives a false flag " cr
+    start-game
+    3 knock-down
+    2 knock-down
+    last-throw ?false
+}t
 .fut-tests-result cr bye
 
