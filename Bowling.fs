@@ -1,3 +1,8 @@
-: start-game 0 ;
+: start-game ( -- game )
+    0 ;
 
-: score ;
+: knock-down ( game,pins -- game )
+    + ;
+
+: score ( game -- score ) 
+    ;
