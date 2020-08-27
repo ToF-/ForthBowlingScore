@@ -15,5 +15,11 @@ t{ ." last-throw gives a false flag if we are at the beginning of a new frame " 
     last-throw ?false 
     clearstack
 }t
+t{ ." last-throw gives the number of pins knocked down on last throw and a true flag if we are in the second half of a frame " cr
+    start-game
+    7 knock-down
+    last-throw ?true 7 ?s
+    clearstack
+}t
 .fut-tests-result cr bye
 
