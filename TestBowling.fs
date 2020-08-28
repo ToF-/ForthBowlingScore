@@ -19,5 +19,13 @@ t{ ." after a spare, the next throw counts as bonus " cr
     3 add-throw
     score @ 16 ?s 
 }t
+t{ ." the second throw of a frame does not create a spare " cr
+    start-game
+    2 add-throw
+    7 add-throw
+    3 add-throw
+    4 add-throw
+    score @ 2 7 + 3 4 + + ?s 
+}t
 cr .fut-tests-result
 bye
