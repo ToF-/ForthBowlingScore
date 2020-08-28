@@ -43,5 +43,25 @@ t{ ." after two strikes, the next two throws count as bonus " cr
     3  add-throw      \ 3  + 3
     score @ 42 ?s
 }t
+t{ ." after ten frames, following throws count only as bonus " cr
+    start-game
+    10 add-throw 10 add-throw 10 add-throw
+    10 add-throw 10 add-throw 10 add-throw
+    10 add-throw 10 add-throw 10 add-throw
+    5 add-throw 5 add-throw
+    3 add-throw   
+    score @ 268 ?s
+}t
+t{ ." after ten frames, strikes and spares don't create bonus " cr
+    start-game
+    10 add-throw 10 add-throw 10 add-throw
+    10 add-throw 10 add-throw 10 add-throw
+    10 add-throw 10 add-throw 10 add-throw
+    10 add-throw 10 add-throw 10 add-throw
+    score @ 300 ?s
+    10 add-throw 10 add-throw 10 add-throw
+    score @ 300 ?s
+}t
+
 cr .fut-tests-result
 bye
