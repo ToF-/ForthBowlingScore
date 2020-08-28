@@ -35,5 +35,13 @@ t{ ." after a strike, the next two throws count as bonus " cr
     3  add-throw 
     score @ 10 2 2 + + 3 3 + + ?s
 }t
+t{ ." after two strikes, the next two throws count as bonus " cr
+    start-game
+    10 add-throw      \ 10
+    10 add-throw      \ 10 + 10
+    2  add-throw      \ 2  + 2  + 2
+    3  add-throw      \ 3  + 3
+    score @ 42 ?s
+}t
 cr .fut-tests-result
 bye
