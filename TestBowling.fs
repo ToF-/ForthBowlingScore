@@ -27,5 +27,13 @@ t{ ." the second throw of a frame does not create a spare " cr
     4 add-throw
     score @ 2 7 + 3 4 + + ?s 
 }t
+
+t{ ." after a strike, the next two throws count as bonus " cr
+    start-game
+    10 add-throw
+    2  add-throw
+    3  add-throw 
+    score @ 10 2 2 + + 3 3 + + ?s
+}t
 cr .fut-tests-result
 bye
