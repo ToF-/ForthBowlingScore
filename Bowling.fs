@@ -1,32 +1,43 @@
+hex
+F000 constant last-throw-mask
+0FFF constant score-mask
+decimal
+12   constant last-throw-offset
 : start-game ( -- game )
     0 ;
 
+: reset ( value -- value )
+    -1 xor and ;
+
 : last-throw ( game -- pins,flag )
-    16 rshift dup 
+    last-throw-offset rshift dup 
     if 1- true then ;
 
-: set-last-throw ( pins -- value )
-    1+ 16 lshift ;
+: set-last-throw ( game,pins -- game )
+    1+ last-throw-offset lshift or ;
 
-: reset-last-throw ( -- value )
-    65535 and ;
+: reset-last-throw ( game -- game )
+    last-throw-mask reset ;
 
 : last-throw! ( game,pins -- game )
     over last-throw 0= if 
         set-last-throw 
-        rot or 
     else 
-        drop drop 
+        2drop
         reset-last-throw
     then ;
 
-: knock-down ( game,pins -- game )
-    dup -rot
-    last-throw!
+: add-to-score! ( game,pins -- game )
     + ;
 
+: knock-down ( game,pins -- game )
+    tuck
+    last-throw!
+    swap
+    add-to-score! ;
+
 : score ( game -- score ) 
-    511 and ;
+    score-mask and ;
 
 
 
