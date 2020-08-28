@@ -30,21 +30,15 @@ variable frame
 : strike? ( pins -- flag )
     10 = half-frame? 0= and ;
 
-
-
 : calc-next-bonus ( pins -- )
-    frame @ 10 <= if
-        strike? if
-            1 bonus +!
-            1 next-bonus !
-            half-frame on
-        else
-            half-frame? 
-            over spare? and
-            if 1 bonus ! then 
-        then 
+    strike? if
+        1 bonus +!
+        1 next-bonus !
+        half-frame on
     else
-        drop 
+        half-frame? 
+        over spare? and
+        if 1 bonus ! then 
     then ;
 
 : advance-frame 
@@ -60,13 +54,16 @@ variable frame
     ." next-bonus " next-bonus @ .
     ." half-frame " half-frame @ . cr ;
 
+: add-pins ( pins -- )
+    dup last-throw !
+    score +! ;
+
 : add-throw ( pins -- )
     dup collect-bonus
-    dup calc-next-bonus
-    dup last-throw !
     frame @ 10 <= if
-        score +! 
-    else 
+        dup calc-next-bonus
+        add-pins
+    else
         drop
     then
     advance-frame ;
