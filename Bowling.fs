@@ -14,11 +14,14 @@ VARIABLE OPEN-FRAME
 : SCORE 
     _SCORE @ ;
 
+: ADVANCE-BONUS 
+    NEXT-BONUS @ BONUS !
+    NEXT-BONUS OFF ;
+
 : COLLECT-BONUS ( pins -- )
     BONUS @ IF
         BONUS @ * _SCORE +!
-        NEXT-BONUS @ BONUS !
-        NEXT-BONUS OFF 
+        ADVANCE-BONUS
     ELSE 
         DROP 
     THEN ;
@@ -32,9 +35,8 @@ VARIABLE OPEN-FRAME
 
 : CALC-BONUS
     DUP STRIKE? IF
+        1 BONUS +!  1 NEXT-BONUS !
         DROP
-        1 BONUS +!
-        1 NEXT-BONUS !
     ELSE SPARE? IF 
             1 BONUS ! 
         THEN 
