@@ -1,12 +1,14 @@
 VARIABLE _SCORE
 VARIABLE BONUS
+VARIABLE NEXT-BONUS
 VARIABLE LAST-ROLL
 VARIABLE OPEN-FRAME
 
 : START-GAME 
-    _SCORE OFF 
-    BONUS OFF 
-    LAST-ROLL OFF 
+    _SCORE     OFF 
+    BONUS      OFF 
+    NEXT-BONUS OFF
+    LAST-ROLL  OFF 
     OPEN-FRAME OFF ;
 
 : SCORE 
@@ -15,15 +17,22 @@ VARIABLE OPEN-FRAME
 : COLLECT-BONUS ( pins -- )
     BONUS @ IF
         _SCORE +!
-        BONUS OFF
+        NEXT-BONUS @ BONUS !
+        NEXT-BONUS OFF 
     ELSE 
         DROP 
     THEN ;
 
 : CALC-BONUS
-    LAST-ROLL @ + 10 = 
-    OPEN-FRAME @ AND IF
+    DUP 10 = IF
+        DROP
         BONUS ON
+        NEXT-BONUS ON
+    ELSE
+        LAST-ROLL @ + 10 = 
+        OPEN-FRAME @ AND IF
+            BONUS ON
+        THEN 
     THEN ;
 
 : ADVANCE-FRAME
