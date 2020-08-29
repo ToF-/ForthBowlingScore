@@ -28,12 +28,15 @@ VARIABLE FRAME-COUNT
         DROP 
     THEN ;
 
+: OPEN-FRAME? ( -- flag )
+    OPEN-FRAME @ ;
+
 : STRIKE? ( pins -- flag )
-    10 = OPEN-FRAME @ 0= AND ;
+    10 = OPEN-FRAME? 0= AND ;
 
 : SPARE? ( pins -- flag )
     LAST-ROLL @ + 10 = 
-    OPEN-FRAME @ AND ;
+    OPEN-FRAME? AND ;
 
 : CALC-BONUS
     DUP STRIKE? IF DROP
@@ -45,16 +48,19 @@ VARIABLE FRAME-COUNT
     THEN ;
 
 : ADVANCE-FRAME
-    OPEN-FRAME @ IF 1 FRAME-COUNT +! THEN
-    OPEN-FRAME @ 0= OPEN-FRAME ! ;
+    OPEN-FRAME? IF 1 FRAME-COUNT +! THEN
+    OPEN-FRAME? 0= OPEN-FRAME ! ;
+
+: ADD-PINS ( pins -- )
+    FRAME-COUNT @ 10 <= IF
+        _SCORE +! 
+    ELSE
+        DROP
+    THEN ;
 
 : ADD-ROLL ( pins -- )
     DUP COLLECT-BONUS
     DUP CALC-BONUS
     DUP LAST-ROLL !
-    FRAME-COUNT @ 10 <= IF
-        _SCORE +! 
-    ELSE
-        DROP
-    THEN
+    ADD-PINS
     ADVANCE-FRAME ;
