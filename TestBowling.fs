@@ -19,6 +19,12 @@ t{ ." when two rolls knock down 10 pins, the next roll is added as a bonus" cr
     SCORE 10 3 + 10 2 + 2 + + ?S
 }t
 
+t{ ." spare bonus is counted only when spare happens within a frame" cr
+    START-GAME
+    4 ADD-ROLL  5 ADD-ROLL
+    5 ADD-ROLL  2 ADD-ROLL
+    SCORE 9 7 + ?S
+}t
 .fut-tests-result
 bye
 
