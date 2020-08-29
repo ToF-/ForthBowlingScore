@@ -39,12 +39,16 @@ VARIABLE FRAME-COUNT
     OPEN-FRAME? AND ;
 
 : CALC-BONUS
-    DUP STRIKE? IF DROP
-        1 BONUS +!  1 NEXT-BONUS !
-        OPEN-FRAME ON
-    ELSE SPARE? IF 
-            1 BONUS ! 
-        THEN 
+    FRAME-COUNT @ 10 <= IF
+        DUP STRIKE? IF DROP
+            1 BONUS +!  1 NEXT-BONUS !
+            OPEN-FRAME ON
+        ELSE SPARE? IF 
+                1 BONUS ! 
+            THEN 
+        THEN
+    ELSE
+        DROP
     THEN ;
 
 : ADVANCE-FRAME

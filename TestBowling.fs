@@ -63,6 +63,14 @@ t{ ." knocking down 10 pins on second roll does not make a strike " cr
      SCORE 10 2 + ?S
  }t
 
+: TWELVE-STRIKES
+    12 0 DO 10 ADD-ROLL LOOP ;
+
+ t{ ." after 10 frames are played, a strike does not create a bonus" cr
+     START-GAME 
+     TWELVE-STRIKES
+     SCORE 300 ?S
+ }t
     
 .fut-tests-result
 bye
