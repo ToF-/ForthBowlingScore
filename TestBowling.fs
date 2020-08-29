@@ -10,10 +10,6 @@ t{ ." after adding a roll, score increases by the number of pins knocked down" c
     4 ADD-ROLL
     SCORE 4 ?S
 }t
-    START-GAME
-    4 ADD-ROLL
-    SCORE 4 ?S
-}t
 
 .fut-tests-result
 bye
