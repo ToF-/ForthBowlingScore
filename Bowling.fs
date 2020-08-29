@@ -10,13 +10,21 @@ VARIABLE LAST-ROLL
 : SCORE 
     _SCORE @ ;
 
-: ADD-ROLL ( pins -- )
+: COLLECT-BONUS ( pins -- )
     BONUS @ IF
-        DUP _SCORE +!
+        _SCORE +!
         BONUS OFF
-    THEN
-    DUP LAST-ROLL @ + 10 = IF
+    ELSE 
+        DROP 
+    THEN ;
+
+: CALC-BONUS
+    LAST-ROLL @ + 10 = IF
         BONUS ON
-    THEN
+    THEN ;
+
+: ADD-ROLL ( pins -- )
+    DUP COLLECT-BONUS
+    DUP CALC-BONUS
     DUP LAST-ROLL !
     _SCORE +! ;
