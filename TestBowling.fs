@@ -34,6 +34,15 @@ t{ ." when 10 pins are knocked down at first roll, the next two rolls are added 
     SCORE 10 3 + 4 + 3 + 4 + ?S
 }t
 
+t{ ." when several strikes are rolled, the bonus for the next roll accumulates" cr
+    START-GAME
+    10 ADD-ROLL
+    10 ADD-ROLL
+    8  ADD-ROLL
+    1  ADD-ROLL
+    SCORE 10 10 + 8 + 10 + 8 + 1 + 8 + 1 + ?S
+}t
+    
 .fut-tests-result
 bye
 
