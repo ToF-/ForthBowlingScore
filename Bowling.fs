@@ -3,13 +3,15 @@ VARIABLE BONUS
 VARIABLE NEXT-BONUS
 VARIABLE LAST-ROLL
 VARIABLE OPEN-FRAME
+VARIABLE FRAME-COUNT
 
 : START-GAME 
     _SCORE     OFF 
     BONUS      OFF 
     NEXT-BONUS OFF
     LAST-ROLL  OFF 
-    OPEN-FRAME OFF ;
+    OPEN-FRAME OFF 
+    FRAME-COUNT OFF ;
 
 : SCORE 
     _SCORE @ ;
@@ -27,16 +29,16 @@ VARIABLE OPEN-FRAME
     THEN ;
 
 : STRIKE? ( pins -- flag )
-    10 = ;
+    10 = OPEN-FRAME @ 0= AND ;
 
 : SPARE? ( pins -- flag )
     LAST-ROLL @ + 10 = 
     OPEN-FRAME @ AND ;
 
 : CALC-BONUS
-    DUP STRIKE? IF
+    DUP STRIKE? IF DROP
         1 BONUS +!  1 NEXT-BONUS !
-        DROP
+        OPEN-FRAME ON
     ELSE SPARE? IF 
             1 BONUS ! 
         THEN 

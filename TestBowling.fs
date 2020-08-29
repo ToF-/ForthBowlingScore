@@ -42,6 +42,27 @@ t{ ." when several strikes are rolled, the bonus for the next roll accumulates" 
     1  ADD-ROLL
     SCORE 10 10 + 8 + 10 + 8 + 1 + 8 + 1 + ?S
 }t
+
+t{ ." knocking down 10 pins on second roll does not make a strike " cr
+    START-GAME 
+    0  ADD-ROLL
+    10 ADD-ROLL
+    3  ADD-ROLL
+    6  ADD-ROLL 
+    SCORE 10 3 + 3 + 6 + ?S
+}t
+
+\ : NINE-ZERO-FRAMES
+\     18 0 DO 0 ADD-ROLL LOOP ;
+\ 
+\ t{ ." after 10 frames are played, rolls are added to score only as bonus" cr
+\     START-GAME 
+\     NINE-ZERO-FRAMES
+\     4 ADD-ROLL 6 ADD-ROLL
+\     2 ADD-ROLL 
+\     SCORE 10 2 + ?S
+\ }t
+
     
 .fut-tests-result
 bye
