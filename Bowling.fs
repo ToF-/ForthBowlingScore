@@ -23,15 +23,20 @@ VARIABLE OPEN-FRAME
         DROP 
     THEN ;
 
+: STRIKE? ( pins -- flag )
+    10 = ;
+
+: SPARE? ( pins -- flag )
+    LAST-ROLL @ + 10 = 
+    OPEN-FRAME @ AND ;
+
 : CALC-BONUS
-    DUP 10 = IF
+    DUP STRIKE? IF
         DROP
         BONUS ON
         NEXT-BONUS ON
-    ELSE
-        LAST-ROLL @ + 10 = 
-        OPEN-FRAME @ AND IF
-            BONUS ON
+    ELSE SPARE? IF 
+            BONUS ON 
         THEN 
     THEN ;
 
