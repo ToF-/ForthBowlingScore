@@ -1,3 +1,10 @@
-: START-GAME ;
+VARIABLE _SCORE
 
-: SCORE 0 ;
+: START-GAME 
+    _SCORE OFF ;
+
+: SCORE 
+    _SCORE @ ;
+
+: ADD-ROLL ( pins -- )
+    _SCORE +! ;
