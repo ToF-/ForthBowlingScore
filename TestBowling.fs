@@ -14,8 +14,9 @@ t{ ." after adding a roll, score increases by the number of pins knocked down" c
 t{ ." when two rolls knock down 10 pins, the next roll is added as a bonus" cr
     START-GAME
     4 ADD-ROLL  6 ADD-ROLL
-    3 ADD-ROLL
-    SCORE 16 ?S
+    3 ADD-ROLL  7 ADD-ROLL
+    2 ADD-ROLL 
+    SCORE 10 3 + 10 2 + 2 + + ?S
 }t
 
 .fut-tests-result

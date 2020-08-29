@@ -1,13 +1,22 @@
 VARIABLE _SCORE
+VARIABLE BONUS
+VARIABLE LAST-ROLL
 
 : START-GAME 
-    _SCORE OFF ;
+    _SCORE OFF 
+    BONUS OFF 
+    LAST-ROLL OFF ;
 
 : SCORE 
     _SCORE @ ;
 
 : ADD-ROLL ( pins -- )
-    _SCORE @ 10 = IF
+    BONUS @ IF
         DUP _SCORE +!
+        BONUS OFF
     THEN
+    DUP LAST-ROLL @ + 10 = IF
+        BONUS ON
+    THEN
+    DUP LAST-ROLL !
     _SCORE +! ;
