@@ -21,8 +21,8 @@ VARIABLE FRAME-COUNT
     NEXT-BONUS OFF ;
 
 : COLLECT-BONUS ( pins -- )
-    BONUS @ IF
-        BONUS @ * _SCORE +!
+    BONUS @ ?DUP IF
+        * _SCORE +!
         ADVANCE-BONUS
     ELSE 
         DROP 
