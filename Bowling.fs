@@ -2,16 +2,15 @@ VARIABLE _SCORE
 VARIABLE BONUS
 VARIABLE NEXT-BONUS
 VARIABLE LAST-ROLL
-VARIABLE OPEN-FRAME
 VARIABLE FRAME-COUNT
+VARIABLE FRAME#
 
 : START-GAME 
     _SCORE     OFF 
     BONUS      OFF 
     NEXT-BONUS OFF
     LAST-ROLL  OFF 
-    OPEN-FRAME OFF 
-    1 FRAME-COUNT ! ;
+    FRAME#     OFF ;
 
 : SCORE 
     _SCORE @ ;
@@ -29,7 +28,7 @@ VARIABLE FRAME-COUNT
     THEN ;
 
 : OPEN-FRAME? ( -- flag )
-    OPEN-FRAME @ ;
+    FRAME# @ 10 MOD 5 = ;
 
 : STRIKE? ( pins -- flag )
     10 = OPEN-FRAME? 0= AND ;
@@ -39,7 +38,7 @@ VARIABLE FRAME-COUNT
     OPEN-FRAME? AND ;
 
 : PAST-10-FRAMES? ( -- flag )
-    FRAME-COUNT @ 10 > ;
+    FRAME# @ 100 >= ;
 
 : STRIKE-BONUS 
     1 BONUS +!  1 NEXT-BONUS ! ;
@@ -52,15 +51,14 @@ VARIABLE FRAME-COUNT
         DUP STRIKE? IF 
             DROP
             STRIKE-BONUS 
-            OPEN-FRAME ON
+            5 FRAME# +!
         ELSE 
             SPARE? IF SPARE-BONUS THEN
         THEN
     THEN ;
 
 : ADVANCE-FRAME
-    OPEN-FRAME? IF 1 FRAME-COUNT +! THEN
-    OPEN-FRAME? 0= OPEN-FRAME ! ;
+    5 FRAME# +! ;
 
 : ADD-PINS ( pins -- )
     PAST-10-FRAMES? IF DROP ELSE _SCORE +!  THEN ;
