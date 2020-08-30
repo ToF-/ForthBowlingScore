@@ -9,6 +9,7 @@ t{ ." after adding a roll, score increases by the number of pins knocked down" c
     START-GAME
     4 ADD-ROLL
     SCORE 4 ?S
+    .SHEET CR
 }t
 
 t{ ." when two rolls knock down 10 pins, the next roll is added as a bonus" cr
@@ -17,6 +18,7 @@ t{ ." when two rolls knock down 10 pins, the next roll is added as a bonus" cr
     3 ADD-ROLL  7 ADD-ROLL
     2 ADD-ROLL 
     SCORE 10 3 + 10 2 + 2 + + ?S
+    .SHEET CR
 }t
 
 t{ ." spare bonus is counted only when spare happens within a frame" cr
@@ -24,6 +26,7 @@ t{ ." spare bonus is counted only when spare happens within a frame" cr
     4 ADD-ROLL  5 ADD-ROLL
     5 ADD-ROLL  2 ADD-ROLL
     SCORE 9 7 + ?S
+    .SHEET CR
 }t
 
 t{ ." when 10 pins are knocked down at first roll, the next two rolls are added as a bonus" cr
@@ -32,6 +35,7 @@ t{ ." when 10 pins are knocked down at first roll, the next two rolls are added 
     3  ADD-ROLL
     4  ADD-ROLL
     SCORE 10 3 + 4 + 3 + 4 + ?S
+    .SHEET CR
 }t
 
 t{ ." when several strikes are rolled, the bonus for the next roll accumulates" cr
@@ -41,6 +45,7 @@ t{ ." when several strikes are rolled, the bonus for the next roll accumulates" 
     8  ADD-ROLL
     1  ADD-ROLL
     SCORE 10 10 + 8 + 10 + 8 + 1 + 8 + 1 + ?S
+    .SHEET CR
 }t
 
 t{ ." knocking down 10 pins on second roll does not make a strike " cr
@@ -50,6 +55,7 @@ t{ ." knocking down 10 pins on second roll does not make a strike " cr
     3  ADD-ROLL
     6  ADD-ROLL 
     SCORE 10 3 + 3 + 6 + ?S
+    .SHEET CR
 }t
 
 : NINE-ZERO-FRAMES
@@ -61,6 +67,7 @@ t{ ." knocking down 10 pins on second roll does not make a strike " cr
      4 ADD-ROLL 6 ADD-ROLL
      2 ADD-ROLL 
      SCORE 10 2 + ?S
+    .SHEET CR
  }t
 
 : TWELVE-STRIKES
@@ -70,6 +77,7 @@ t{ ." knocking down 10 pins on second roll does not make a strike " cr
      START-GAME 
      TWELVE-STRIKES
      SCORE 300 ?S
+    .SHEET CR
  }t
     
 .fut-tests-result

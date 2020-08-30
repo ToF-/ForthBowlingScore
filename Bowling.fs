@@ -1,16 +1,24 @@
+\ Bowling.fs
+
+\ The word `START-GAME` will reinitialize the bowling game, setting the score to 0.
+\ The word `SCORE ( -- score ) ` will return the current score.
+\ The word `ADD-ROLL ( pins -- ) ` will register knocked down pins and calculate the score.
+
 VARIABLE _SCORE
 VARIABLE BONUS
 VARIABLE NEXT-BONUS
 VARIABLE LAST-ROLL
-VARIABLE FRAME-COUNT
 VARIABLE FRAME#
+CREATE SHEET 80 ALLOT
+VARIABLE SHEET-SIZE
 
 : START-GAME 
     _SCORE     OFF 
     BONUS      OFF 
     NEXT-BONUS OFF
     LAST-ROLL  OFF 
-    FRAME#     OFF ;
+    FRAME#     OFF
+    SHEET-SIZE OFF ;
 
 : SCORE 
     _SCORE @ ;
@@ -26,6 +34,22 @@ VARIABLE FRAME#
     ELSE 
         DROP 
     THEN ;
+
+: SHEET! ( char -- )
+    SHEET SHEET-SIZE @ + C!
+    1 SHEET-SIZE +! ;
+
+: MARK-STRIKE
+    [CHAR] X SHEET!
+    BL       SHEET! ;
+
+: MARK-SPARE 
+    -1 SHEET-SIZE +!
+    [CHAR] / SHEET! ;
+
+: MARK-ROLL ( pins -- )
+    DUP 10 = IF DROP [CHAR] X ELSE
+    [CHAR] 0 + THEN SHEET! ;
 
 : OPEN-FRAME? ( -- flag )
     FRAME# @ 10 MOD 5 = ;
@@ -47,13 +71,16 @@ VARIABLE FRAME#
     1 BONUS ! ;
 
 : CALC-BONUS
-    PAST-10-FRAMES? IF DROP ELSE
+    PAST-10-FRAMES? IF MARK-ROLL ELSE
         DUP STRIKE? IF 
             DROP
             STRIKE-BONUS 
+            MARK-STRIKE
             5 FRAME# +!
+            
         ELSE 
-            SPARE? IF SPARE-BONUS THEN
+            DUP SPARE? IF SPARE-BONUS MARK-SPARE DROP
+            ELSE MARK-ROLL THEN
         THEN
     THEN ;
 
@@ -63,9 +90,13 @@ VARIABLE FRAME#
 : ADD-PINS ( pins -- )
     PAST-10-FRAMES? IF DROP ELSE _SCORE +!  THEN ;
 
+: .SHEET 
+    SHEET SHEET-SIZE @ TYPE ;
+
 : ADD-ROLL ( pins -- )
     DUP COLLECT-BONUS
     DUP CALC-BONUS
     DUP LAST-ROLL !
     ADD-PINS
-    ADVANCE-FRAME ;
+    ADVANCE-FRAME 
+    BL SHEET! ;
