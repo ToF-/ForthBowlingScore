@@ -89,31 +89,34 @@ decimal
     1 bonus!
     0 nextb! ;
 
+: claim-open ( game,pins -- game )
+    over proll@ + 10 = if claim-spare then ;
+
+: claim-closed ( game,pins -- game )
+    10 = if claim-strike then ;
+
 : claim-bonus ( game,pins -- game )
     over frame@ 10 < if
-        over open?@ 0= if
-            dup 10 = if 
-                drop claim-strike
-            else
-                drop
-            then
-        else
-            over proll@ + 10 = if
-                claim-spare
-            then
+        over open?@ if 
+            claim-open 
+        else 
+            claim-closed 
         then
     else
         drop
     then ;
 
+: next-frame ( game -- game )
+    0 proll! frame++ ;
+
+: open-frame ( game,pins -- game )
+    proll! 1 open?! ;
+
 : advance-frame ( game,pins -- game )
-    over open?@ 0= if 
-        proll!
-        1 open?!
-    else
-        drop 
-        0 proll!
-        frame++
+    over open?@ if 
+        drop next-frame 
+    else 
+        open-frame 
     then ;
 
 : add-pins-to-score ( game,pins -- game )
