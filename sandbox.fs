@@ -69,21 +69,20 @@ decimal
     over score@ + score! ;
 
 : collect-bonus ( game,pins -- game )
+    ." collect bonus : " over bonus@ . cr
     over bonus@ * 
     add-to-score
-    dup nextb@ bonus! ;
-
-: advance-bonus ( game -- game )
-    dup nextb@ 
-    swap bonus!
+    dup nextb@ bonus! 
     0 nextb! ;
 
 : frame++ ( game -- game )
     dup frame@ 1+ 10 min frame! ;
 
 : claim-strike ( game -- game )
+    ." strike ! " cr
     dup bonus@ 1+ bonus!
-    1 nextb! ;
+    1 nextb! 
+    1 open?! ;
 
 : claim-spare ( game -- game )
     1 bonus!
@@ -107,9 +106,13 @@ decimal
     then ;
 
 : next-frame ( game -- game )
-    0 proll! frame++ ;
+    ." next frame " 
+    0 proll! 
+    0 open?!
+    frame++ ;
 
 : open-frame ( game,pins -- game )
+    ." open frame "
     proll! 1 open?! ;
 
 : advance-frame ( game,pins -- game )
@@ -127,10 +130,12 @@ decimal
     then ;
 
 : add-roll ( game,pins -- game )
+    ." adding " dup . cr
     tuck collect-bonus
+
     over claim-bonus
     over add-pins-to-score
-    swap advance-frame ;
+    swap advance-frame dup frame@ . dup score@ . cr ;
 
 : x ( game -- game )
     10 add-roll ;
@@ -169,5 +174,6 @@ decimal
     until 
     end-game ;
 
-
-
+start-game
+cr 
+1 add-roll 4 add-roll 4 add-roll 5 add-roll 6 add-roll 4 add-roll 5 add-roll 5 add-roll 10 add-roll 0 add-roll 1 add-roll 7 add-roll 3 add-roll 6 add-roll 4 add-roll 10 add-roll 2 add-roll 8 add-roll 6 add-roll score@ . cr
