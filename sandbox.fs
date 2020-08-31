@@ -69,7 +69,6 @@ decimal
     over score@ + score! ;
 
 : collect-bonus ( game,pins -- game )
-    ." collect bonus : " over bonus@ . cr
     over bonus@ * 
     add-to-score
     dup nextb@ bonus! 
@@ -79,7 +78,6 @@ decimal
     dup frame@ 1+ 10 min frame! ;
 
 : claim-strike ( game -- game )
-    ." strike ! " cr
     dup bonus@ 1+ bonus!
     1 nextb! 
     1 open?! ;
@@ -106,13 +104,11 @@ decimal
     then ;
 
 : next-frame ( game -- game )
-    ." next frame " 
     0 proll! 
     0 open?!
     frame++ ;
 
 : open-frame ( game,pins -- game )
-    ." open frame "
     proll! 1 open?! ;
 
 : advance-frame ( game,pins -- game )
@@ -130,7 +126,6 @@ decimal
     then ;
 
 : add-roll ( game,pins -- game )
-    ." adding " dup . cr
     tuck collect-bonus
 
     over claim-bonus
