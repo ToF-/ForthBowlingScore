@@ -2,98 +2,154 @@
 \ multiply by bonus, then make bonus advance 
 
 variable score
-: collect ( bonus,pins -- bonus',points )
-    over 3 and *
-    swap 2 rshift swap ;
 
-: open-frame? ( frame -- flag )
-    256 and ;
+2 base !
+000000000000000001111 constant frame%
+000000000000000110000 constant bonus%
+000000000000001000000 constant nextb%
+000000000000010000000 constant open?%
+000000000111100000000 constant proll%
+111111111000000000000 constant score%
+decimal
+ 0 constant [frame]
+ 4 constant [bonus]
+ 6 constant [nextb]
+ 7 constant [open?]
+ 8 constant [proll]
+12 constant [score]
 
-: frame# ( frame -- frame# )
-    15 and ;
+: reset ( mask -- value )
+    -1 xor and ;
 
-: prev-roll ( frame -- pins )
-    4 rshift 15 and ;
+: bits@ ( struct,offset,mask -- value )
+    rot swap and swap rshift ;
 
-: frame#++ ( frame -- frame )
-    15 and 1+ 10 min ;
+: bits! ( struct,value,offset,mask -- struct )
+    -rot                      \ struct,mask,value,offset
+    lshift -rot               \ value',struct,mask
+    reset or ;
 
-: save-roll ( frame,pins -- frame )
-    swap 15 and 256 or
-    swap 4 lshift or ;
+: frame@ ( game -- frame )
+    [frame] frame% bits@ ;
 
-: strike? ( frame,pins -- flag )
-    10 = swap open-frame? 0= and ;
+: bonus@ ( game -- bonus )
+    [bonus] bonus% bits@ ;
 
-: spare? ( frame,pins -- flag ) 
-    swap dup open-frame? if
-        prev-roll + 10 = 
-    else 
-        drop drop false 
-    then ;
+: nextb@ ( game -- nextb )
+    [nextb] nextb% bits@ ;
 
-: claim ( bonus,frame,pins -- bonus )
-    over frame# 10 < if
-        2dup strike? -rot spare?
-        if drop drop 1 else if 1 + 4 or then then
+: open?@ ( game -- open? )
+    [open?] open?% bits@ ;
+
+: proll@ ( game -- proll )
+    [proll] proll% bits@ ;
+
+: score@ ( game -- score )
+    [score] score% bits@ ;
+
+: frame! ( game,frame -- frame )
+    [frame] frame% bits! ;
+
+: bonus! ( game,bonus -- game )
+    [bonus] bonus% bits! ;
+
+: nextb! ( game,nextb -- game )
+    [nextb] nextb% bits! ;
+
+: open?! ( game,open? -- game )
+    [open?] open?% bits! ;
+
+: proll! ( game,proll -- game )
+    [proll] proll% bits! ;
+
+: score! ( game,score -- game )
+    [score] score% bits! ;
+
+: add-to-score ( game,pins -- game )
+    over score@ + score! ;
+
+: collect-bonus ( game,pins -- game )
+    over bonus@ * 
+    add-to-score
+    dup nextb@ bonus! ;
+
+: advance-bonus ( game -- game )
+    dup nextb@ 
+    swap bonus!
+    0 nextb! ;
+
+: frame++ ( game -- game )
+    dup frame@ 1+ 10 min frame! ;
+
+: claim-strike ( game -- game )
+    dup bonus@ 1+ bonus!
+    1 nextb! ;
+
+: claim-spare ( game -- game )
+    1 bonus!
+    0 nextb! ;
+
+: claim-bonus ( game,pins -- game )
+    over frame@ 10 < if
+        over open?@ 0= if
+            dup 10 = if 
+                drop claim-strike
+            else
+                drop
+            then
+        else
+            over proll@ + 10 = if
+                claim-spare
+            then
+        then
     else
-        drop drop
+        drop
     then ;
 
-: advance ( frame,pins,bonus-- frame )
-    swap -rot                     \ pins,frame,bonus
-    4 and over open-frame? or if
-        frame#++ swap drop 
+: advance-frame ( game,pins -- game )
+    over open?@ 0= if 
+        proll!
+        1 open?!
     else
-        swap save-roll 
+        drop 
+        0 proll!
+        frame++
     then ;
 
-: add-pins ( frame,pins -- )
-    swap frame# 10 < if score +! else drop then ;
+: add-pins-to-score ( game,pins -- game )
+    over frame@ 10 < if
+        add-to-score 
+    else
+        drop
+    then ;
 
-: .bonus ( bonus -- )
-    ." bonus: " dup 3 and . ." next:" 4 and 2 rshift . ;
+: add-roll ( game,pins -- game )
+    tuck collect-bonus
+    over claim-bonus
+    over add-pins-to-score
+    swap advance-frame ;
 
-: .frame# ( frame -- )
-    ." frame# " 15 and . ;
-
-: .open-frame ( frame -- )
-    ." open:" 256 and if ." yes " else ." no " then ;
-
-: .game ( frame,bonus -- )
-    .bonus dup .frame# .open-frame ;
-
-: .score ( -- )
-    ." score:" score ? ;
-
-: add-roll ( frame,bonus,pins -- frame,bonus )
-    dup -rot collect score +!    \ frame,pins,bonus
-    >r 2dup r> -rot claim        \ frame,pins,bonus
-    >r 2dup r> -rot add-pins     \ frame,pins,bonus
-    dup >r advance r> 
-    2dup .game .score cr .s cr ;          \ frame,bonus
-
-: x ( frame,bonus -- frame,bonus )
+: x ( game -- game )
     10 add-roll ;
 
-: / ( frame,bonus -- frame,bonus )
-    over open-frame? if
-        over prev-roll 10 swap - add-roll
+: / ( game -- game )
+    dup open?@ if
+        dup proll@ 10 swap - add-roll
     else ." not in open frame" then ;
 
 : o ( frame,bonus,pins -- frame,bonus )
     add-roll ;
 
 : start-game
-    score off 
-    0 0 ;
+    0 ;
 
 : end-game
-    drop drop ;
+    drop ;
 
 : game
     start-game
     begin
+        dup score@ . cr
         key >r 
         i [char] x = if 
                 ." strike! " cr x
