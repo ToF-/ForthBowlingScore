@@ -4,19 +4,17 @@
 variable score
 
 2 base !
-000000000000000001111 constant frame%
-000000000000000110000 constant bonus%
-000000000000001000000 constant nextb%
-000000000000010000000 constant open?%
-000000000111100000000 constant proll%
-111111111000000000000 constant score%
+00000000000000001111 constant frame%
+00000000000000110000 constant bonus%
+00000000000001000000 constant open?%
+00000000011110000000 constant proll%
+11111111100000000000 constant score%
 decimal
  0 constant [frame]
  4 constant [bonus]
- 6 constant [nextb]
- 7 constant [open?]
- 8 constant [proll]
-12 constant [score]
+ 6 constant [open?]
+ 7 constant [proll]
+11 constant [score]
 
 : reset ( mask -- value )
     -1 xor and ;
@@ -35,9 +33,6 @@ decimal
 : bonus@ ( game -- bonus )
     [bonus] bonus% bits@ ;
 
-: nextb@ ( game -- nextb )
-    [nextb] nextb% bits@ ;
-
 : open?@ ( game -- open? )
     [open?] open?% bits@ ;
 
@@ -53,9 +48,6 @@ decimal
 : bonus! ( game,bonus -- game )
     [bonus] bonus% bits! ;
 
-: nextb! ( game,nextb -- game )
-    [nextb] nextb% bits! ;
-
 : open?! ( game,open? -- game )
     [open?] open?% bits! ;
 
@@ -68,23 +60,23 @@ decimal
 : add-to-score ( game,pins -- game )
     over score@ + score! ;
 
+: points ( pin,bonus -- points )
+    dup 1 and swap 2/ + * ;
+
 : collect-bonus ( game,pins -- game )
-    over bonus@ * 
+    over bonus@ points
     add-to-score
-    dup nextb@ bonus! 
-    0 nextb! ;
+    dup bonus@ 2/ bonus! ;
 
 : frame++ ( game -- game )
     dup frame@ 1+ 10 min frame! ;
 
 : claim-strike ( game -- game )
-    dup bonus@ 1+ bonus!
-    1 nextb! 
+    dup bonus@ 2 + bonus! 
     1 open?! ;
 
 : claim-spare ( game -- game )
-    1 bonus!
-    0 nextb! ;
+    1 bonus! ;
 
 : claim-open ( game,pins -- game )
     over proll@ + 10 = if claim-spare then ;
@@ -125,12 +117,20 @@ decimal
         drop
     then ;
 
+: .game ( game -- )
+    ." frame :" dup frame@ .
+    ." open  :" dup open?@ if ." yes " else ." no " then
+    ." bonus :" dup bonus@ .
+    ." prev  :" dup proll@ .
+    ." score :" score@ . ;
+
+
 : add-roll ( game,pins -- game )
     tuck collect-bonus
-
     over claim-bonus
     over add-pins-to-score
-    swap advance-frame dup frame@ . dup score@ . cr ;
+    swap advance-frame 
+    ;
 
 : x ( game -- game )
     10 add-roll ;
@@ -140,7 +140,7 @@ decimal
         dup proll@ 10 swap - add-roll
     else ." not in open frame" then ;
 
-: o ( frame,bonus,pins -- frame,bonus )
+: o ( game,pins -- game )
     add-roll ;
 
 : start-game
@@ -168,7 +168,3 @@ decimal
         r> [char] q = 
     until 
     end-game ;
-
-start-game
-cr 
-1 add-roll 4 add-roll 4 add-roll 5 add-roll 6 add-roll 4 add-roll 5 add-roll 5 add-roll 10 add-roll 0 add-roll 1 add-roll 7 add-roll 3 add-roll 6 add-roll 4 add-roll 10 add-roll 2 add-roll 8 add-roll 6 add-roll score@ . cr
