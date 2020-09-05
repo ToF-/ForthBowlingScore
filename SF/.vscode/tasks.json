@@ -6,11 +6,38 @@
         {
             "label": "unit",
             "type": "shell",
-            "command": "sf tests.fs",
+            "command": "make unit",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
+            }
+        },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "make test",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "make clean",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "spoj",
+            "type": "shell",
+            "command": "make spoj",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
             }
         }
     ]
