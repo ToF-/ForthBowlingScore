@@ -46,7 +46,8 @@ VARIABLE FRAME#
     FRAME# @ 1+ 
     10 MIN FRAME# ! ;
 
-: ADVANCE-FRAME 
+: ADVANCE-FRAME ( pins -- )
+    PREV-ROLL !
     OPEN-FRAME @ 0= OPEN-FRAME ! 
     OPEN-FRAME @ 0= IF 
         FRAME# @ 1+ 10 MIN 
@@ -55,9 +56,10 @@ VARIABLE FRAME#
 
 : ADD-ROLL ( pins -- )
     DUP COLLECT-BONUS
-    FRAME# @ 10 < IF DUP CALC-BONUS THEN
-    DUP PREV-ROLL !
-    FRAME# @ 10 < IF ADD-PINS ELSE DROP THEN
+    FRAME# @ 10 < IF 
+        DUP CALC-BONUS 
+        DUP ADD-PINS 
+    THEN
     ADVANCE-FRAME ;
 
 
