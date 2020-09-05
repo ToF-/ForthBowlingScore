@@ -25,6 +25,23 @@ T{ ." two rolls in different frames cannot make spare " cr
 T{ ." a strike at first rolls creates bonus for the next two rolls " cr
     START-GAME 10 ADD-ROLL 4 ADD-ROLL 6 ADD-ROLL SCORE @ -> 30 
 }T
+
+T{ ." after ten frames, throws are not counted anymore " cr
+    START-GAME 
+    3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL
+    3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL
+    3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL
+    3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL 3 ADD-ROLL 5 ADD-ROLL
+    SCORE @ -> 80
+}T
+
+T{ ." after ten frames, throws don't generate bonus anymore "
+    START-GAME
+    10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 
+    10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 
+    10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 10 ADD-ROLL 
+    SCORE @ -> 300
+}T
 ;
 
 TESTS
