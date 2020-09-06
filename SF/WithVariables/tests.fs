@@ -7,7 +7,7 @@ INCLUDE Bowling.fs
 : TESTS
 T{
    ." when starting a game, the score is zero " cr
-    START-GAME SCORE @ -> 0
+    START-GAME SCORE @ -> 0 
 }T
 
 T{ ." after adding a roll, the score increases " cr
