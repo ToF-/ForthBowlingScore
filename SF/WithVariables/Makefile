@@ -3,11 +3,11 @@ test: Bowling.fs
 	sed -n -e 's/\(<- \)\(.*\)/\2/pw input.dat'     test.txt >/dev/null
 	sed -n -e 's/\(-> \)\(.*\)/\2/pw temp.dat'      test.txt >/dev/null
 	sed 's/\(.*\)/\1 /pw expected.dat'              temp.dat >/dev/null
-	sf spoj.fs <input.dat >result.dat
+	gforth-itc spoj.fs <input.dat >result.dat
 	diff expected.dat result.dat
 
 unit: Bowling.fs tests.fs
-	sf tests.fs
+	gforth-itc tests.fs
 
 spoj: Bowling.fs
 	echo "MAIN BYE" >main.fs
