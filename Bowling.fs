@@ -14,14 +14,19 @@ VARIABLE BONUS
         BONUS OFF
     THEN ;
 
+: NEW-FRAME? ( -- flag )
+    LAST-ROLL @ NOTHING = ;
+
+: OPEN-FRAME? ( -- flag )
+    NEW-FRAME? 0= ;
+
 : CHECK-SPARE ( #pins -- #pins )
-    LAST-ROLL @ DUP NOTHING <> IF
-        OVER + 10 = IF BONUS ON THEN
-    ELSE DROP THEN ;
+    OPEN-FRAME? IF
+        DUP LAST-ROLL @ + 10 = IF BONUS ON THEN
+    THEN ;
     
 : ROLL+ ( #pins -- )
     COLLECT-BONUS
     CHECK-SPARE
-    LAST-ROLL @ NOTHING = IF DUP ELSE NOTHING THEN 
-    LAST-ROLL ! 
+    NEW-FRAME? IF DUP ELSE NOTHING THEN LAST-ROLL ! 
     SCORE +! ;

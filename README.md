@@ -141,3 +141,23 @@ VARIABLE BONUS
     LAST-ROLL ! 
     SCORE +! ;
 ```
+## Refactoring
+```forth
+: NEW-FRAME? ( -- flag )
+    LAST-ROLL @ NOTHING = ;
+
+: OPEN-FRAME? ( -- flag )
+    NEW-FRAME? 0= ;
+
+: CHECK-SPARE ( #pins -- #pins )
+    OPEN-FRAME? IF
+        DUP LAST-ROLL @ + 10 = IF BONUS ON THEN
+    THEN ;
+    
+: ROLL+ ( #pins -- )
+    COLLECT-BONUS
+    CHECK-SPARE
+    NEW-FRAME? IF DUP ELSE NOTHING THEN LAST-ROLL ! 
+    SCORE +! ;
+```
+
