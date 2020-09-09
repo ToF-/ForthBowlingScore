@@ -40,6 +40,7 @@ For each test case output one integer: the score made given the test case rolls.
 - spare bonus
 - rolls totalizing 10 accross a frame are not a spare
 - strike bonus
+- repeated strikes
 - last frame with no bonus throws
 - last frame spare
 - last frame strike
@@ -187,5 +188,44 @@ After 10 and 4 and 2 the score is 22
     CHECK-STRIKE
     ADVANCE-FRAME
     SCORE +! ;
+```
+## Repeated strikes
+
+After 10 and 10 and 4 and 2 and 1 the score is 47
+```forth
+: START
+    0 SCORE ! 
+    NOTHING LAST-ROLL ! 
+    0 BONUS !
+    0 NEXT-BONUS ! ;
+
+: COLLECT-BONUS ( #pins -- #pins )
+    BONUS @ ?DUP IF OVER * SCORE +! THEN
+    NEXT-BONUS @ BONUS !
+    NEXT-BONUS OFF ;
+
+: NEW-FRAME? ( -- flag )
+    LAST-ROLL @ NOTHING = ;
+
+: OPEN-FRAME? ( -- flag )
+    NEW-FRAME? 0= ;
+
+: CHECK-SPARE ( #pins -- #pins )
+    OPEN-FRAME? IF
+        DUP LAST-ROLL @ + 10 = IF 1 BONUS ! NEXT-BONUS OFF THEN
+    THEN ;
+
+: ADVANCE-FRAME ( #pins -- #pins )
+    NEW-FRAME? IF DUP ELSE NOTHING THEN 
+    LAST-ROLL ! ;
+
+: CHECK-STRIKE ( #pins -- #pins )
+    NEW-FRAME? IF
+        DUP 10 = IF
+            1 BONUS +!
+            1 NEXT-BONUS !
+            ADVANCE-FRAME
+        THEN
+    THEN ;
 ```
 

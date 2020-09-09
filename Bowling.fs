@@ -7,11 +7,11 @@ VARIABLE NEXT-BONUS
 : START
     0 SCORE ! 
     NOTHING LAST-ROLL ! 
-    BONUS OFF 
-    NEXT-BONUS OFF ;
+    0 BONUS !
+    0 NEXT-BONUS ! ;
 
 : COLLECT-BONUS ( #pins -- #pins )
-    BONUS @ IF DUP SCORE +! THEN
+    BONUS @ ?DUP IF OVER * SCORE +! THEN
     NEXT-BONUS @ BONUS !
     NEXT-BONUS OFF ;
 
@@ -23,7 +23,7 @@ VARIABLE NEXT-BONUS
 
 : CHECK-SPARE ( #pins -- #pins )
     OPEN-FRAME? IF
-        DUP LAST-ROLL @ + 10 = IF BONUS ON THEN
+        DUP LAST-ROLL @ + 10 = IF 1 BONUS ! NEXT-BONUS OFF THEN
     THEN ;
 
 : ADVANCE-FRAME ( #pins -- #pins )
@@ -33,8 +33,8 @@ VARIABLE NEXT-BONUS
 : CHECK-STRIKE ( #pins -- #pins )
     NEW-FRAME? IF
         DUP 10 = IF
-            BONUS ON
-            NEXT-BONUS ON
+            1 BONUS +!
+            1 NEXT-BONUS !
             ADVANCE-FRAME
         THEN
     THEN ;
