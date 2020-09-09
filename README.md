@@ -76,3 +76,39 @@ VARIABLE SCORE
 ```
 
 After adding 3 and 3 then 5 and 5 then 2 the score is 2O
+```forth
+VARIABLE SCORE
+VARIABLE LAST-ROLL
+VARIABLE BONUS
+
+: START
+    0 SCORE ! 
+    0 LAST-ROLL ! 
+    BONUS OFF ;
+
+: ROLL+ ( #pins -- )
+    BONUS @ IF DUP SCORE +! BONUS OFF THEN
+    DUP LAST-ROLL @ + 10 = IF BONUS ON THEN
+    DUP LAST-ROLL !
+    SCORE +! ;
+```
+## Refactoring
+```forth
+: COLLECT-BONUS ( #pins -- #pins )
+    BONUS @ IF 
+        DUP SCORE +!
+        BONUS OFF
+    THEN ;
+
+: CHECK-SPARE ( #pins -- #pins )
+    DUP LAST-ROLL @ + 10 = IF BONUS ON THEN ;
+    
+: ROLL+ ( #pins -- )
+    COLLECT-BONUS
+    CHECK-SPARE
+    DUP LAST-ROLL !
+    SCORE +! ;
+```
+## Spare happens only within a frame boundary
+
+After adding 4 and 4 and 6 and 2 the score is 16
