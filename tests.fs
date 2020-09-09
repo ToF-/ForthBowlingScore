@@ -33,6 +33,23 @@ T{ ." After 10 frames and no bonus, adding throws does not increase score" CR
     8 ROLL+ 1 ROLL+ 8 ROLL+ 1 ROLL+ 8 ROLL+ 1 ROLL+ 
     SCORE @ 90 ?S
 }T
+
+T{ ." After 9 average frame and a spare only the bonus roll is counted" CR
+    START 
+    0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 
+    0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 
+    0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 0 ROLL+ 
+    8 ROLL+ 2 ROLL+ 5 ROLL+ 5 ROLL+
+    SCORE @ 15 ?S
+}T
+
+T{ ." After 10 strikes only bonus rolls are counted" CR
+    START
+    10 ROLL+ 10 ROLL+ 10 ROLL+ 10 ROLL+
+    10 ROLL+ 10 ROLL+ 10 ROLL+ 10 ROLL+
+    10 ROLL+ 10 ROLL+ 10 ROLL+ 10 ROLL+
+    SCORE @ 300 ?S
+}T
 BYE
 
 

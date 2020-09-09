@@ -23,35 +23,35 @@ VARIABLE FRAME#
 : OPEN-FRAME? ( -- flag )
     NEW-FRAME? 0= ;
 
-: CHECK-SPARE ( #pins -- )
-    OPEN-FRAME? IF
-        LAST-ROLL @ + 10 = IF 1 BONUS ! NEXT-BONUS OFF THEN
-    ELSE DROP THEN ;
+: CLOSE-FRAME 
+    NOTHING LAST-ROLL ! ;
 
-: ADVANCE-FRAME ( #pins -- )
+: CHECK-SPARE ( #pins -- )
+    LAST-ROLL @ + 10 = IF 
+        1 BONUS ! NEXT-BONUS OFF 
+    THEN 
+    CLOSE-FRAME ;
+
+: ADVANCE-FRAME 
     NEW-FRAME? IF
-        LAST-ROLL ! 
-    ELSE 
-        DROP 
-        NOTHING LAST-ROLL !
         FRAME# @ 1+ 10 MIN FRAME# !
     THEN ;
 
 : CHECK-STRIKE ( #pins -- )
-    NEW-FRAME? IF
-        DUP 10 = IF
-            1 BONUS +!
-            1 NEXT-BONUS !
-            DUP ADVANCE-FRAME
-        THEN
+    DUP 10 = IF
         DROP
+        1 BONUS +!
+        1 NEXT-BONUS !
+        CLOSE-FRAME 
     ELSE
-        DROP
+        LAST-ROLL !
     THEN ;
 
 : ROLL+ ( #pins -- )
     DUP COLLECT-BONUS
-    DUP CHECK-SPARE
-    DUP CHECK-STRIKE
-    FRAME# @ 0 10 WITHIN IF DUP SCORE +! THEN 
-    ADVANCE-FRAME ;
+    FRAME# @ 0 10 WITHIN IF 
+        NEW-FRAME? IF DUP CHECK-STRIKE ELSE DUP CHECK-SPARE THEN
+        SCORE +! 
+        ADVANCE-FRAME 
+    ELSE DROP
+    THEN ;

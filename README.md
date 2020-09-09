@@ -328,4 +328,40 @@ VARIABLE FRAME#
     FRAME# @ 0 10 WITHIN IF DUP SCORE +! THEN 
     ADVANCE-FRAME ;
 ```
+## Refactoring 
+```forth
+: CLOSE-FRAME 
+    NOTHING LAST-ROLL ! ;
 
+: CHECK-SPARE ( #pins -- )
+    LAST-ROLL @ + 10 = IF 
+        1 BONUS ! NEXT-BONUS OFF 
+    THEN 
+    CLOSE-FRAME ;
+
+: ADVANCE-FRAME 
+    NEW-FRAME? IF
+        FRAME# @ 1+ 10 MIN FRAME# !
+    THEN ;
+
+: CHECK-STRIKE ( #pins -- )
+    DUP 10 = IF
+        DROP
+        1 BONUS +!
+        1 NEXT-BONUS !
+        CLOSE-FRAME 
+    ELSE
+        LAST-ROLL !
+    THEN ;
+
+: ROLL+ ( #pins -- )
+    DUP COLLECT-BONUS
+    NEW-FRAME? IF DUP CHECK-STRIKE ELSE DUP CHECK-SPARE THEN
+    FRAME# @ 0 10 WITHIN IF SCORE +! ELSE DROP THEN 
+    ADVANCE-FRAME ;
+```
+## Last Frame Spare
+After 9 average frame and a spare only the bonus roll is counted
+
+## Last Frame Strike
+After 10 strikes only bonus rolls are counted
