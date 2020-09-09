@@ -12,8 +12,8 @@ VARIABLE FRAME#
     0 NEXT-BONUS ! 
     0 FRAME# ! ;
 
-: COLLECT-BONUS ( #pins -- #pins )
-    BONUS @ ?DUP IF OVER * SCORE +! THEN
+: COLLECT-BONUS ( #pins -- )
+    BONUS @ ?DUP IF * SCORE +! ELSE DROP THEN
     NEXT-BONUS @ BONUS !
     NEXT-BONUS OFF ;
 
@@ -23,27 +23,35 @@ VARIABLE FRAME#
 : OPEN-FRAME? ( -- flag )
     NEW-FRAME? 0= ;
 
-: CHECK-SPARE ( #pins -- #pins )
+: CHECK-SPARE ( #pins -- )
     OPEN-FRAME? IF
-        DUP LAST-ROLL @ + 10 = IF 1 BONUS ! NEXT-BONUS OFF THEN
+        LAST-ROLL @ + 10 = IF 1 BONUS ! NEXT-BONUS OFF THEN
+    ELSE DROP THEN ;
+
+: ADVANCE-FRAME ( #pins -- )
+    NEW-FRAME? IF
+        LAST-ROLL ! 
+    ELSE 
+        DROP 
+        NOTHING LAST-ROLL !
+        FRAME# @ 1+ 10 MIN FRAME# !
     THEN ;
 
-: ADVANCE-FRAME ( #pins -- #pins )
-    OPEN-FRAME? IF FRAME# @ 1+ 10 MIN FRAME# ! THEN 
-    NEW-FRAME? IF DUP ELSE NOTHING THEN LAST-ROLL ! ;
-
-: CHECK-STRIKE ( #pins -- #pins )
+: CHECK-STRIKE ( #pins -- )
     NEW-FRAME? IF
         DUP 10 = IF
             1 BONUS +!
             1 NEXT-BONUS !
-            ADVANCE-FRAME
+            DUP ADVANCE-FRAME
         THEN
+        DROP
+    ELSE
+        DROP
     THEN ;
 
 : ROLL+ ( #pins -- )
-    COLLECT-BONUS
-    CHECK-SPARE
-    CHECK-STRIKE
+    DUP COLLECT-BONUS
+    DUP CHECK-SPARE
+    DUP CHECK-STRIKE
     FRAME# @ 0 10 WITHIN IF DUP SCORE +! THEN 
-    ADVANCE-FRAME DROP ;
+    ADVANCE-FRAME ;

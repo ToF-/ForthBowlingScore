@@ -283,3 +283,49 @@ VARIABLE FRAME#
     ADVANCE-FRAME DROP ;
 ```
 ## Refactoring
+```forth
+: COLLECT-BONUS ( #pins -- )
+    BONUS @ ?DUP IF * SCORE +! ELSE DROP THEN
+    NEXT-BONUS @ BONUS !
+    NEXT-BONUS OFF ;
+
+: NEW-FRAME? ( -- flag )
+    LAST-ROLL @ NOTHING = ;
+
+: OPEN-FRAME? ( -- flag )
+    NEW-FRAME? 0= ;
+
+: CHECK-SPARE ( #pins -- )
+    OPEN-FRAME? IF
+        LAST-ROLL @ + 10 = IF 1 BONUS ! NEXT-BONUS OFF THEN
+    ELSE DROP THEN ;
+
+: ADVANCE-FRAME ( #pins -- )
+    NEW-FRAME? IF
+        LAST-ROLL ! 
+    ELSE 
+        DROP 
+        NOTHING LAST-ROLL !
+        FRAME# @ 1+ 10 MIN FRAME# !
+    THEN ;
+
+: CHECK-STRIKE ( #pins -- )
+    NEW-FRAME? IF
+        DUP 10 = IF
+            1 BONUS +!
+            1 NEXT-BONUS !
+            DUP ADVANCE-FRAME
+        THEN
+        DROP
+    ELSE
+        DROP
+    THEN ;
+
+: ROLL+ ( #pins -- )
+    DUP COLLECT-BONUS
+    DUP CHECK-SPARE
+    DUP CHECK-STRIKE
+    FRAME# @ 0 10 WITHIN IF DUP SCORE +! THEN 
+    ADVANCE-FRAME ;
+```
+
