@@ -112,3 +112,32 @@ VARIABLE BONUS
 ## Spare happens only within a frame boundary
 
 After adding 4 and 4 and 6 and 2 the score is 16
+```forth
+VARIABLE SCORE
+VARIABLE LAST-ROLL
+VARIABLE BONUS
+-1 CONSTANT NOTHING
+
+: START
+    0 SCORE ! 
+    NOTHING LAST-ROLL ! 
+    BONUS OFF ;
+
+: COLLECT-BONUS ( #pins -- #pins )
+    BONUS @ IF 
+        DUP SCORE +!
+        BONUS OFF
+    THEN ;
+
+: CHECK-SPARE ( #pins -- #pins )
+    LAST-ROLL @ DUP NOTHING <> IF
+        OVER + 10 = IF BONUS ON THEN
+    ELSE DROP THEN ;
+    
+: ROLL+ ( #pins -- )
+    COLLECT-BONUS
+    CHECK-SPARE
+    LAST-ROLL @ NOTHING = IF DUP ELSE NOTHING THEN 
+    LAST-ROLL ! 
+    SCORE +! ;
+```
