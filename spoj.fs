@@ -27,14 +27,14 @@ VARIABLE LAST-ROLL
     FRAME# @ 1+ 10 MIN FRAME# ! 
     NIL LAST-ROLL ! ;
 
-: NEW-CHECK ( #pins -- ) 
+: CHECK-STRIKE ( #pins -- ) 
     DUP 10 = IF 
         DROP STRIKE! FRAME++ 
     ELSE
         LAST-ROLL !  
     THEN ;
 
-: OPEN-CHECK ( #pins -- )
+: CHECK-SPARE ( #pins -- )
     LAST-ROLL @ + 10 = IF SPARE! THEN
     FRAME++ ;
 
@@ -42,7 +42,7 @@ VARIABLE LAST-ROLL
     LAST-ROLL @ NIL = ;
 
 : CHECK-BONUS ( #pins -- )
-    NEW-FRAME? IF NEW-CHECK ELSE OPEN-CHECK THEN ;
+    NEW-FRAME? IF CHECK-STRIKE ELSE CHECK-SPARE THEN ;
 
 : ROLL+ ( #pins -- )
     DUP COUNT-BONUS
@@ -81,3 +81,4 @@ VARIABLE LAST-ROLL
     LOOP ;
 
 
+MAIN BYE
