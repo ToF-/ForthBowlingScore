@@ -3,12 +3,12 @@ VARIABLE FRAME#
 VARIABLE BONUS
 VARIABLE NEXT-BONUS
 VARIABLE LAST-ROLL
--1 CONSTANT NIL
+-1 CONSTANT NOTHING
 
 : START 
     0 SCORE !
     0 FRAME# !
-    -1 LAST-ROLL !
+    NOTHING LAST-ROLL !
     0 BONUS !
     0 NEXT-BONUS ! ;
 
@@ -25,24 +25,24 @@ VARIABLE LAST-ROLL
 
 : FRAME++
     FRAME# @ 1+ 10 MIN FRAME# ! 
-    NIL LAST-ROLL ! ;
+    NOTHING LAST-ROLL ! ;
 
-: CHECK-STRIKE ( #pins -- ) 
+: NEW-CHECK ( #pins -- ) 
     DUP 10 = IF 
         DROP STRIKE! FRAME++ 
     ELSE
         LAST-ROLL !  
     THEN ;
 
-: CHECK-SPARE ( #pins -- )
+: OPEN-CHECK ( #pins -- )
     LAST-ROLL @ + 10 = IF SPARE! THEN
     FRAME++ ;
 
 : NEW-FRAME? ( -- flag )
-    LAST-ROLL @ NIL = ;
+    LAST-ROLL @ NOTHING = ;
 
 : CHECK-BONUS ( #pins -- )
-    NEW-FRAME? IF CHECK-STRIKE ELSE CHECK-SPARE THEN ;
+    NEW-FRAME? IF NEW-CHECK ELSE OPEN-CHECK THEN ;
 
 : ROLL+ ( #pins -- )
     DUP COUNT-BONUS
@@ -58,7 +58,7 @@ VARIABLE LAST-ROLL
     [CHAR] 0 - ;
 
 : IS-DIGIT? ( char -- flag )
-    TO-DIGIT DUP 0 >= SWAP 9 <= AND ;     
+    TO-DIGIT 0 10 WITHIN ;     
 
 : SKIP-NON-DIGIT ( -- char )
     BEGIN KEY DUP IS-DIGIT? 0= WHILE DROP REPEAT ;
