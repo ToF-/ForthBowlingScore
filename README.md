@@ -63,3 +63,16 @@ VARIABLE SCORE
 ## spare bonus
 
 After adding 6 then 4 then 2 the score is 14.
+
+```forth
+VARIABLE SCORE
+
+: START
+    0 SCORE ! ;
+
+: ROLL+ ( #pins -- )
+    SCORE @ 10 = IF DUP SCORE +! THEN
+    SCORE +! ;
+```
+
+After adding 3 and 3 then 5 and 5 then 2 the score is 2O
