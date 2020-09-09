@@ -16,6 +16,10 @@ T{ ." After adding 3 and 3 then 5 and 5 then 2 the score is 20 " CR
 T{ ." After adding 4 and 4 and 6 and 2 the score is 16" CR
     START 4 ROLL+ 4 ROLL+ 6 ROLL+ 2 ROLL+ SCORE @ 16 ?S
 }T
+
+T{ ." After 10 and 4 and 2 the score is 22" CR
+    START 10 ROLL+ 4 ROLL+ 2 ROLL+ SCORE @ 22 ?S
+}T
 BYE
 
 

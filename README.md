@@ -102,7 +102,7 @@ VARIABLE BONUS
 
 : CHECK-SPARE ( #pins -- #pins )
     DUP LAST-ROLL @ + 10 = IF BONUS ON THEN ;
-    
+
 : ROLL+ ( #pins -- )
     COLLECT-BONUS
     CHECK-SPARE
@@ -133,7 +133,7 @@ VARIABLE BONUS
     LAST-ROLL @ DUP NOTHING <> IF
         OVER + 10 = IF BONUS ON THEN
     ELSE DROP THEN ;
-    
+
 : ROLL+ ( #pins -- )
     COLLECT-BONUS
     CHECK-SPARE
@@ -153,7 +153,7 @@ VARIABLE BONUS
     OPEN-FRAME? IF
         DUP LAST-ROLL @ + 10 = IF BONUS ON THEN
     THEN ;
-    
+
 : ADVANCE-FRAME ( #pins -- #pins )
     NEW-FRAME? IF DUP ELSE NOTHING THEN 
     LAST-ROLL ! ;
@@ -161,6 +161,30 @@ VARIABLE BONUS
 : ROLL+ ( #pins -- )
     COLLECT-BONUS
     CHECK-SPARE
+    ADVANCE-FRAME
+    SCORE +! ;
+```
+## Strike bonus
+
+After 10 and 4 and 2 the score is 22
+```forth
+: CHECK-STRIKE ( #pins -- #pins )
+    NEW-FRAME? IF
+        DUP 10 = IF
+            BONUS ON
+            NEXT-BONUS ON
+            ADVANCE-FRAME
+        THEN
+    THEN ;
+
+: ADVANCE-FRAME ( #pins -- #pins )
+    NEW-FRAME? IF DUP ELSE NOTHING THEN 
+    LAST-ROLL ! ;
+
+: ROLL+ ( #pins -- )
+    COLLECT-BONUS
+    CHECK-SPARE
+    CHECK-STRIKE
     ADVANCE-FRAME
     SCORE +! ;
 ```
