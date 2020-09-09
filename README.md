@@ -60,3 +60,6 @@ VARIABLE SCORE
     SCORE +! ;
 ```
 
+## spare bonus
+
+After adding 6 then 4 then 2 the score is 14.
