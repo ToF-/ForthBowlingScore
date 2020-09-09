@@ -228,4 +228,6 @@ After 10 and 10 and 4 and 2 and 1 the score is 47
         THEN
     THEN ;
 ```
+## Last Frame, no bonus throws
 
+After 10 frames and no bonus, adding throws does not increase score
