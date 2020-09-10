@@ -24,7 +24,7 @@ VARIABLE FRAME#
 
 : NEW-FRAME? ( -- flag ) OPEN-FRAME? 0= ;
 
-: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1 - ;
+: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1- ;
 
 : FRAME>
     NEW-FRAME? IF FRAME# @ 1+ 10 MIN FRAME# ! THEN ;

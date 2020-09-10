@@ -59,7 +59,7 @@ This is basically what our program has to do when receiving a value from the inp
 ```forth
     : ROLL+ ( #pins -- )
         ( collect extra point from previous bonus applied to the #pins value )
-        ( frame# is between 0 and 9) IF
+        ( frame count is between 0 and 9) IF
             ( check for bonus with this value given the current frame state )
             ( close the frame or make it open depending on previous step )
             ( add the roll value to the score )
@@ -67,7 +67,7 @@ This is basically what our program has to do when receiving a value from the inp
         THEN ;
 ```
 ### Bonus
-The bonus mechanism is like a dispenser: we feed it with bonus points gained from a strike or a spare, and these bonus points get used each time as a factor for extra score when a new roll is added to the game. Once the bonus for a roll is consumed, the bonus dispenser prepares the next value to be used. Here is the pseudo code, followed by the expected effect on the stack.
+The bonus mechanism is like a dispenser: we feed it with bonus points gained from a strike or a spare, and these bonus points get used as a factor for extra score each time a new roll is added to the game. Once the bonus for a roll is consumed, the bonus dispenser prepares the next value to be used. Here is the pseudo code, followed by the expected effect on the stack.
 ```forth
     : STRIKE! ( feeds the bonus dispenser with new points ) … ;
     : SPARE!  ( feeds the bonus dispenser with a point ) … ;
@@ -86,7 +86,7 @@ The bonus mechanism is like a dispenser: we feed it with bonus points gained fro
     1 2 1
 ```
 ### Frame State
-How can we know, when adding a roll to the game if that roll is part of an open frame or if it starts a new frame? We have to keep track of the current frame state. If the state is open, then we should be able to retrieve the first roll value from this frame.
+How can we know when adding a roll to the game if that roll is part of an open frame or if it starts a new frame? We have to keep track of the current frame state. If the state is open, then we should be able to retrieve the first roll value from this frame.
 
 ```forth
     : OPEN-FRAME! ( #pins -- ) ( marks the frame as open and keeps the roll value ) … ;
@@ -114,12 +114,15 @@ While keeping track of the frame count we have to follow 3 rules:
     : FRAME> ( increases the frame by one, capped to 10 ) … ;
     : START ( -- ) ( should also initialize the frame count to 0 ) … ;
 
-    START FRAME> FRAME# ? ⏎
+    START FRAME# ? ⏎
     0 ok
+    FRAME> FRAME# ? ⏎
+    1 ok
     FRAME> FRAME> FRAME> FRAME> FRAME> FRAME> FRAME> FRAME>
     FRAME> FRAME> FRAME> FRAME> FRAME# ? ⏎
     10 ok
 ```
+Now that we have identified some of the definitions we'll need, we can start to implement them, and once this is done, try to assemble them in our `ROLL+` definition.
 ## Implementation
 ### Initialization
 Let's begin with creating some variables, and a word to start the game:
@@ -147,14 +150,14 @@ A strike increments the current bonus factor, and sets the next bonus factor (bi
 ```forth
 : STRIKE! BONUS @ 1+ 4 OR BONUS ! ;
 ```
-Consuming the bonus consists in getting the bonus value (bits 0 to 1) on the stack and then shifting the bonus value to make the next bonus the current bonus.
+Consuming the bonus consists in isolating the bonus value (bits 0 and 1) with a bitwise `AND`, leaving that value on the stack and then right-shifting the bonus value by 2 position on the right to make the next bonus (bit 2) the current bonus.
 ```forth
 : BONUS> ( -- factor )
     BONUS @ DUP 3 AND
     SWAP 2 RSHIFT BONUS ! ;
 ```
 ### Collecting Bonus
-Given a roll value, multiply it by the bonus factor, and add that to the current score.
+This is done by multiply the roll value by the bonus factor, and adding that to the score.
 ```forth
 : COLLECT-BONUS ( #pins -- )
     BONUS> * SCORE +! ;
@@ -175,7 +178,7 @@ Marking the frame as closed can be done by setting the frame state to zero. Open
     OPEN-FRAME? 0= ;
 
 : LAST-ROLL ( -- #pins )
-    FRAME-STATE @ 1 - ;
+    FRAME-STATE @ 1- ;
 ```
 ### Frame Count
 Advancing the frame count is only possible when the frame is not open, and to a max of 10.
@@ -186,7 +189,7 @@ Advancing the frame count is only possible when the frame is not open, and to a 
 ### Checking for Bonus
 We have a strike if the frame is a new frame and the roll is a 10. In that case, add points to the bonus and close the frame.
 
-If the frame is new but we don't have a strike then open the frame.
+If the frame is new but we don't have a strike then open the frame, saving the roll value.
 
 If the frame is open and the roll added to the previous one makes a 10, we have a spare.
 
@@ -202,7 +205,7 @@ If the frame is open, wether we have a spare or not we have to close the frame.
     NEW-FRAME? IF CHECK-STRIKE ELSE CHECK-SPARE THEN ;
 ```
 ### Adding a Roll to the Current Score
-We are almost done. Adding a roll to the game will execute these task of collecting bonus, checking for new bonus, increasing the score and advancing the frame count.
+We are almost done. Adding a roll to the game will execute these tasks of collecting bonus, checking for new bonus, increasing the score and advancing the frame count.
 ```forth
 : ROLL+ ( #pins -- )
     DUP COLLECT-BONUS
@@ -241,7 +244,7 @@ START 4 ROLL+ SCORE ?  ⏎
 ```
 Success!
 ## Getting Numbers From the Input Stream
-To get a number, we have to read the input stream character by character, skipping them until we find a digit, then reading digits, accumulating them into the resulting number.
+To get a number, we have to read the input stream character by character, skipping them until we find a digit, then reading characters while these are digits, accumulating them into the resulting number.
 
 The standard word `DIGIT? ( char -- n,-1|0 )` returns *false* if the character on the stack is not a digit, or *true*, preceded with the matching digit otherwise.
 ```forth
@@ -269,7 +272,7 @@ foo4807  ⏎
 4807 ok
 ```
 ## Main program
-Armed with this word, we can now add the top definition for our program, and finally call that word then leave Forth:
+Armed with this word, we can now add the top definition for our program, and finally call that word before leaving the Forth environment.
 ```forth
 : BOWLING
     GET-NUMBER ?DUP 0 DO
@@ -302,13 +305,14 @@ Given the this input file:
 ```
 The following result is obtained:
 ```
-gforth Bowling.fs <input.dat
+gforth Bowling.fs <input.dat ⏎
 17
 52
 300
 80
 60
 ```
+Yay!!
 
 # The Program
 ```forth
