@@ -46,8 +46,6 @@ VARIABLE FRAME#
         FRAME>
     THEN ;
 
-: .SCORE SCORE ? ;
-
 : SKIP-NON-DIGIT ( -- d )
     BEGIN KEY DIGIT? 0= WHILE REPEAT ;
 
@@ -66,5 +64,4 @@ VARIABLE FRAME#
         LOOP
         SCORE ? CR
     LOOP ;
-
 
