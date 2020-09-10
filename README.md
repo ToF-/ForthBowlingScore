@@ -378,11 +378,3 @@ BOWLING
 BYE
 
 ```
-
-an attempt
-<html><code>
-<code style="color:Tomato;">x</code> = <code style="color:Blue;">5</code>;<br>
-y = 6;<br>
-z = x + y;
-</code>
-</html>
