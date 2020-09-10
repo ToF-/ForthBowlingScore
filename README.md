@@ -286,7 +286,7 @@ BYE
 # Testing
 
 Given the this input file:
-```forth
+```
 # input.dat: a test file for Bowling.fs
 5
 4
