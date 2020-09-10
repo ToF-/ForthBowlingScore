@@ -4,35 +4,27 @@ VARIABLE FRAME-STATE
 VARIABLE FRAME#
 
 : START
-    0 SCORE !
-    0 BONUS !
-    0 FRAME-STATE !
-    0 FRAME# ! ;
+    0 SCORE ! 0 BONUS ! 0 FRAME-STATE ! 0 FRAME# ! ;
 
 : SPARE! 1 BONUS ! ;
+
 : STRIKE! BONUS @ 1+ 4 OR BONUS ! ;
 
 : BONUS> ( -- factor )
     BONUS @ DUP 3 AND 
     SWAP 2 RSHIFT BONUS ! ;
 
-: COLLECT-BONUS ( #pins -- )
-    BONUS> * SCORE +! ;
+: COLLECT-BONUS ( #pins -- ) BONUS> * SCORE +! ;
 
-: CLOSE-FRAME!
-    0 FRAME-STATE ! ;
+: CLOSE-FRAME!  0 FRAME-STATE ! ;
 
-: OPEN-FRAME! ( #pins -- )
-    1+ FRAME-STATE ! ;
+: OPEN-FRAME! ( #pins -- ) 1+ FRAME-STATE ! ;
 
-: OPEN-FRAME? ( -- flag )
-    FRAME-STATE @ ;
+: OPEN-FRAME? ( -- flag ) FRAME-STATE @ ;
 
-: NEW-FRAME? ( -- flag )
-    OPEN-FRAME? 0= ;
+: NEW-FRAME? ( -- flag ) OPEN-FRAME? 0= ;
 
-: LAST-ROLL ( -- #pins )
-    FRAME-STATE @ 1 - ;
+: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1 - ;
 
 : FRAME>
     NEW-FRAME? IF FRAME# @ 1+ 10 MIN FRAME# ! THEN ;
