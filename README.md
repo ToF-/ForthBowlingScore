@@ -137,7 +137,7 @@ VARIABLE FRAME#
     0 FRAME# ! ;
 ```
 ### Bonus Factors
-There are 2 factors to consider: the bonus factor (to be applied to the next roll) and the next bonus factor (to be applied to the roll following the next). These two tiny values can be stored in the same variable, witch makes switching from bonus to next bonus very simple. The bonus part will occupy bits 0 to 1, while the next bonus part will be represented by bit 2.
+There are 2 factors to consider: the bonus factor (to be applied to the next roll) and the next bonus factor (to be applied to the roll following the next). These two tiny values can be stored in the same variable, which makes switching from bonus to next bonus very simple. The bonus part will occupy bits 0 to 1, while the next bonus part will be represented by bit 2.
 
 A spare creates a bonus factor of 1 and sets the next bonus factor to 0:
 ```forth
@@ -211,5 +211,33 @@ We are almost done. Adding a roll to the game will execute these task of collect
         SCORE +!
         FRAME>
     THEN ;
-
+```
+Let's try our word!
+```forth
+START 4 ROLL+ SCORE ?  ⏎
+4  ok
+6 ROLL+ SCORE ?  ⏎
+10  ok
+3 ROLL+ 2 ROLL+ SCORE ?  ⏎
+18  ok
+10 ROLL+ SCORE ?  ⏎
+28  ok
+4 ROLL+ 2 ROLL+ SCORE ?  ⏎
+40  ok
+10 ROLL+ SCORE ?  ⏎
+50  ok
+10 ROLL+ SCORE ?  ⏎
+70  ok
+6 ROLL+ 4 ROLL+ SCORE ?  ⏎
+96  ok
+3 ROLL+ 5 ROLL+ SCORE ?  ⏎
+107  ok
+10 ROLL+ SCORE ?  ⏎
+117  ok
+8 ROLL+ 2 ROLL+ 7 ROLL+ SCORE ?  ⏎
+144  ok
+: PERFECT START 12 0 DO 10 ROLL+ LOOP SCORE ? ; PERFECT ⏎
+300  ok
+```
+Success!
 
