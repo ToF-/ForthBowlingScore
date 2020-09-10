@@ -11,7 +11,7 @@ VARIABLE FRAME#
 : STRIKE! BONUS @ 1+ 4 OR BONUS ! ;
 
 : BONUS> ( -- factor )
-    BONUS @ DUP 3 AND 
+    BONUS @ DUP 3 AND
     SWAP 2 RSHIFT BONUS ! ;
 
 : COLLECT-BONUS ( #pins -- ) BONUS> * SCORE +! ;
@@ -48,30 +48,23 @@ VARIABLE FRAME#
 
 : .SCORE SCORE ? ;
 
-: TO-DIGIT ( char -- n )
-    [CHAR] 0 - ;
-
-: IS-DIGIT? ( char -- flag )
-    TO-DIGIT 0 10 WITHIN ;     
-
-: SKIP-NON-DIGIT ( -- char )
-    BEGIN KEY DUP IS-DIGIT? 0= WHILE DROP REPEAT ;
+: SKIP-NON-DIGIT ( -- d )
+    BEGIN KEY DIGIT? 0= WHILE REPEAT ;
 
 : GET-NUMBER ( -- n )
-    SKIP-NON-DIGIT  
-    0 SWAP          \ accumulator
+    0 SKIP-NON-DIGIT
     BEGIN
-        TO-DIGIT SWAP 10 * + 
-        KEY DUP IS-DIGIT? 
-    0= UNTIL DROP ;
+        SWAP 10 * +
+        KEY DIGIT?
+    0= UNTIL ;
 
-: MAIN
+: BOWLING
     GET-NUMBER ?DUP 0 DO
         START
-        GET-NUMBER ?DUP 0 DO 
-            GET-NUMBER ROLL+ 
+        GET-NUMBER ?DUP 0 DO
+            GET-NUMBER ROLL+
         LOOP
-        .SCORE CR
+        SCORE ? CR
     LOOP ;
 
 

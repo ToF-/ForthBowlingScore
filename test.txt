@@ -1,3 +1,4 @@
+# input.dat: a test file for Bowling.fs
 <- 5
 <- 4
 <- 3 5 2 7

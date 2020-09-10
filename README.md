@@ -13,7 +13,7 @@ Here is an excerpt of the [game rules](https://www.playerssports.net/page/bowlin
 - *t* – the number of test cases, then t test cases follows.
 - each test case consists in 2 lines:
     - *n* - the number of rolls delivered, ( 0 < *n* ≤ 21 )
-    - *r1*,..*rn* - the rolls delivered    ( 0 ≤ *r* ≤ 10 ) 
+    - *r1*,..*rn* - the rolls delivered    ( 0 ≤ *r* ≤ 10 )
 
 ### Output
 
@@ -62,7 +62,7 @@ This is basically what our program has to do when receiving a value from the inp
         ( frame# is between 0 and 9) IF
             ( check for bonus with this value given the current frame state )
             ( close the frame or make it open depending on previous step )
-            ( add the roll value to the score ) 
+            ( add the roll value to the score )
             ( increase frame count if the frame is closed )
         THEN ;
 ```
@@ -107,7 +107,7 @@ How can we know, when adding a roll to the game if that roll is part of an open 
 While keeping track of the frame count we have to follow 3 rules:
 - closing a frame increases the frame count by one
 - the frame number cannot exceed 10
-- after 10 frames have been played, supplementary rolls are only counted as bonus 
+- after 10 frames have been played, supplementary rolls are only counted as bonus
 
 ```forth
     VARIABLE FRAME#
@@ -150,7 +150,7 @@ A strike increments the current bonus factor, and sets the next bonus factor (bi
 Consuming the bonus consists in getting the bonus value (bits 0 to 1) on the stack and then shifting the bonus value to make the next bonus the current bonus.
 ```forth
 : BONUS> ( -- factor )
-    BONUS @ DUP 3 AND 
+    BONUS @ DUP 3 AND
     SWAP 2 RSHIFT BONUS ! ;
 ```
 ### Collecting Bonus
@@ -184,11 +184,11 @@ Advancing the frame count is only possible when the frame is not open, and to a 
     NEW-FRAME? IF FRAME# @ 1+ 10 MIN FRAME# ! THEN ;
 ```
 ### Checking for Bonus
-We have a strike if the frame is a new frame and the roll is a 10. In that case, add points to the bonus and close the frame. 
+We have a strike if the frame is a new frame and the roll is a 10. In that case, add points to the bonus and close the frame.
 
 If the frame is new but we don't have a strike then open the frame.
 
-If the frame is open and the roll added to the previous one makes a 10, we have a spare. 
+If the frame is open and the roll added to the previous one makes a 10, we have a spare.
 
 If the frame is open, wether we have a spare or not we have to close the frame.
 ```forth
@@ -240,4 +240,76 @@ START 4 ROLL+ SCORE ?  ⏎
 300  ok
 ```
 Success!
+## Getting Numbers From the Input Stream
+To get a number, we have to read the input stream character by character, skipping them until we find a digit, then reading digits, accumulating them into the resulting number.
+
+The standard word `DIGIT? ( char -- n,-1|0 )` returns *false* if the character on the stack is not a digit, or *true*, preceded with the matching digit otherwise.
+```forth
+32 DIGIT? . ⏎
+0 ok
+50 DIGIT? . .  ⏎
+-1 2 ok
+```
+Here's a word to skip all input characters until a digit is met:
+```forth
+: SKIP-NON-DIGIT ( -- n )
+    BEGIN KEY DIGIT? 0= WHILE REPEAT ;
+```
+And here's a word to get a number:
+```forth
+: GET-NUMBER ( -- n )
+    0 SKIP-NON-DIGIT
+    BEGIN
+        SWAP 10 * +
+        KEY DIGIT?
+    0= UNTIL ;
+
+GET-NUMBER . ⏎
+foo4807  ⏎
+4807 ok
+```
+## Main program
+Armed with this word, we can now add the top definition for our program, and finally call that word then leave Forth:
+```forth
+: BOWLING
+    GET-NUMBER ?DUP 0 DO
+        START
+        GET-NUMBER ?DUP 0 DO
+            GET-NUMBER ROLL+
+        LOOP
+        SCORE ? CR
+    LOOP ;
+
+BOWLING
+BYE
+```
+# Testing
+
+Given the this input file:
+```forth
+# input.dat: a test file for Bowling.fs
+5
+4
+3 5 2 7
+6
+10 5 4 10 5 2
+12
+10 10 10 10 10 10 10 10 10 10 10 10
+20
+3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5
+3
+10 10 10
+```
+The following result is obtained:
+```
+gforth Bowling.fs <input.dat
+17
+52
+300
+80
+60
+```
+
+
+
 

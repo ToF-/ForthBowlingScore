@@ -10,7 +10,7 @@ unit: Bowling.fs tests.fs
 	gforth-itc tests.fs
 
 spoj: Bowling.fs
-	echo "MAIN BYE" >main.fs
+	echo "BOWLING BYE" >main.fs
 	cat Bowling.fs main.fs >spoj.fs
 
 clean : 
