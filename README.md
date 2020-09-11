@@ -42,7 +42,7 @@ Let's pretend we have one of these bowling score sheets and use them to mark the
 
 - *10* : we mark a strike `X` and are ready to use the next frame column on the sheet. The score for the frame is still not calculable given that the next frame throws are not known yet.
 
-![score_sheet](/images/score_sheet1.png){width:150px}
+![score_sheet](/images/score_sheet1.png | width=75%)
 - *7* : we mark a 7 on the first column of the frame. The score for frame 1 is still not known.
 
 ![score_sheet](/images/score_sheet2.png)
