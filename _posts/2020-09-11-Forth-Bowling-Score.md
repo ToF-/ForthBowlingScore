@@ -73,151 +73,165 @@ This is basically what our program has to do when receiving a value from the inp
             ( increase frame count if the frame is closed )
         THEN ;
 ```
+
+### Keeping the Score
+The first thing we obviously need is a variable to memorize the player's score. Since that variable needs to be initialized, let's also create a definition that effect:
+```forth
+    VARIABLE SCORE
+
+    \ initializes variables before a game starts
+    : START
+        0 SCORE ! ;
+```
+Surely we will need to amend this definition to include several other variables.
+
 ### Bonus
-The bonus works like a dispenser mechanism: we feed it with bonus points gained from a strike or a spare, and these bonus points get used as a factor for extra score each time a new roll is added to the game. Once the bonus for a roll is consumed, the dispenser prepares the next value to be used. 
+Let's interest ourselves in the bonus mechanism. The bonus works like a dispenser: we feed it with bonus points gained from a strike or a spare, and these bonus points get used as a factor for extra score each time a new roll is added to the game. Once the bonus for a roll is consumed, the dispenser is ready to provide the the next value to be used.
 <p align="center"> <img src="/images/bonus.png" width="33%" /> </p>
-Here is the pseudo code, followed by the expected effect on the stack.
-
-```forth
-    : STRIKE! ( feeds the bonus dispenser with new points ) … ;
-    : SPARE!  ( feeds the bonus dispenser with a point ) … ;
-
-    : BONUS>  ( -- factor ) ( dispenses the factor and advance the bonus ) … ;
-
-    : START   ( starts the game, emptying the dispenser ) … ;
-
-    START BONUS> .  ⏎
-    0 ok
-    START SPARE! BONUS> . BONUS> . ⏎
-    1 0 ok
-    START STRIKE! BONUS> . BONUS> . ⏎
-    1 1 ok
-    START STRIKE! BONUS> . STRIKE! BONUS> . BONUS> . ⏎
-    1 2 1
-```
-### Frame State
-When adding a roll to the game, how can we know if that roll is part of an open frame or if it starts a new frame? We have to keep track of the current frame state. If the state is open, then we should be able to retrieve the first roll value from this frame.
-<p align="center"> <img src="/images/framestate.png" width="33%" /> </p>
-
-```forth
-    : OPEN-FRAME! ( #pins -- ) ( marks the frame as open and keeps the roll value ) … ;
-    : OPEN-FRAME? ( -- flag ) ( trues if the frame is open ) … ;
-    : NEW-FRAME? ( -- flag ) OPEN-FRAME? 0= ;
-    : LAST-ROLL ( -- #pins ) ( returns the last roll value assuming the frame is open ) … ;
-    : CLOSE-FRAME! ( -- ) ( marks the frame as closed ) … ;
-    : START ( -- ) ( should also initialize the frame as new ) … ;
-
-    START NEW-FRAME? .  ⏎
-    -1 ok
-    7 OPEN-FRAME! NEW-FRAME? . OPEN-FRAME? . LAST-ROLL .  ⏎
-    0 -1 7 ok
-    3 OPEN-FRAME! CLOSE-FRAME! NEW-FRAME? .  ⏎
-    -1 ok
-```
-### Frame Count
-While keeping track of the frame count we have to follow 2 rules:
-- the frame number cannot exceed 10
-- closing a frame increases the frame count by one
-
-```forth
-    VARIABLE FRAME#
-    : FRAME> ( increases the frame by one, capped to 10 ) … ;
-    : START ( -- ) ( should also initialize the frame count to 0 ) … ;
-    : CLOSE-FRAME! ( -- ) FRAME> … ( mark the frame as closed ) … ;
-
-    START FRAME# ? ⏎
-    0 ok
-    FRAME> FRAME# ? ⏎
-    1 ok
-    FRAME> FRAME> FRAME> FRAME> FRAME> FRAME> FRAME> FRAME>
-    FRAME> FRAME> FRAME> FRAME> FRAME# ? ⏎
-    10 ok
-```
-Now that we have identified some of the definitions we'll need, we can start to implement them, and once this is done, try to assemble them in our `ROLL+` definition.
-## Implementation
-### Initialization
-Let's begin with creating some variables, and a word to start the game:
-
-```forth
-VARIABLE SCORE
-VARIABLE BONUS
-VARIABLE FRAME-STATE
-VARIABLE FRAME#
-
-: START
-    0 SCORE !
-    0 BONUS !
-    0 FRAME-STATE !
-    0 FRAME# ! ;
-```
-### Bonus Factors
 There are 2 factors to consider: the bonus factor (to be applied to the next roll) and the next bonus factor (to be applied to the roll following the next). These two tiny values can be stored in the same variable, which makes switching from bonus to next bonus very simple. The bonus part will occupy bits 0 to 1, while the next bonus part will be represented by bit 2.
+```forth
+    VARIABLE BONUS
 
+    \ initializes variables before a game starts
+    : START
+        0 SCORE !
+        0 BONUS ! ;
+```
 A spare creates a bonus factor of 1 and sets the next bonus factor to 0:
 ```forth
-: SPARE! 1 BONUS ! ;
+    \ set the bonus to 1, no supplement
+    : SPARE 1 BONUS ! ;
 ```
 A strike increments the current bonus factor, and sets the next bonus factor (bit 3) to 1 with a bitwise `OR` operation:
 ```forth
-: STRIKE! BONUS @ 1+ 4 OR BONUS ! ;
+    \ increase next roll bonus, and set supplement to 1
+    : STRIKE BONUS @ 1+ 4 OR BONUS ! ;
 ```
-Consuming the bonus consists in isolating the bonus value (bits 0 and 1) with a bitwise `AND`, leaving that value on the stack and then right-shifting the bonus value by 2 position on the right to make the next bonus (bit 2) the current bonus.
+Consuming the bonus consists in isolating the bonus value (bits 0 and 1) with a bitwise `AND`, leaving that value on the stack and then right-shifting the bonus value by 2 positions on the right to make the next bonus (bit 2) the current bonus.
 ```forth
-: BONUS> ( -- factor )
-    BONUS @ DUP 3 AND
-    SWAP 2 RSHIFT BONUS ! ;
+    \ consumes bonus factor, get the supplement ready
+    : BONUS> ( -- factor )
+        BONUS @ DUP 3 AND
+        SWAP 2 RSHIFT BONUS ! ;
 ```
+Now let's try our definitions.
+```forth
+    START BONUS> .  ⏎
+    0 ok
+    START SPARE BONUS> . BONUS> . ⏎
+    1 0 ok
+    START STRIKE BONUS> . BONUS> . ⏎
+    1 1 ok
+    START STRIKE BONUS> . STRIKE BONUS> . BONUS> . ⏎
+    1 2 1
+```
+And we can verify that our dispenser keeps track of the bonus factors to apply.
+
 ### Collecting Bonus
-This is done by multiply the roll value by the bonus factor, and adding that to the score.
+Collecting the bonus can be done by multiplying the roll value by the bonus factor, and adding that to the score.
 ```forth
 : COLLECT-BONUS ( #pins -- )
     BONUS> * SCORE +! ;
 ```
 ### Frame Count
-The frame count can be incremented by one every time the player closes a frame, but cannot exceed 10, hence the use of `MIN` here: 
+Obviously we will have to remember how many frames the player has played. This requires another variable, and this variable should be set to 0 at the outset of the game.
 ```forth
-: FRAME>
-    FRAME# @ 1+ 10 MIN FRAME# ! ;
+    VARIABLE FRAME#
+
+    \ initialize all variables
+    : START
+        0 SCORE !
+        0 BONUS !
+        0 FRAME# ! ;
+```
+The frame count has to be incremented every time the player *closes* a frame (i.e delivers a strike or makes their second roll), but it will not go beyond 10:
+```forth
+    \ advance frame count
+    : FRAME#++
+        FRAME# @ 1+ 10 MIN FRAME# ! ;
 ```
 ### Frame State
-A frame is either a new frame, meaning the player hasn't thrown a roll yet, or an open frame, meaning the player has already thrown one roll. If the value of the frame state is zero, we consider the frame to be new.
+When adding a roll to the game, how can we know if that roll is part of an open frame or if it starts a new frame? We have to keep track of the current frame state. If the state is open, then we should be able to retrieve the first roll value from this frame.
+<p align="center"> <img src="/images/framestate.png" width="33%" /> </p>
+Let's have another variable,
+```forth
+VARIABLE FRAME
+```
+A frame is either a new frame, meaning the player hasn't thrown the frame's first roll yet, or an open frame, meaning the player has already thrown one roll. Let's decide that if the value of the `FRAME-STATE` variable is 0, we consider the frame to be new, open otherwise.
 ```forth
 : OPEN-FRAME? ( -- flag )
-    FRAME-STATE @ ;
+    FRAME @ ;
 
 : NEW-FRAME? ( -- flag )
     OPEN-FRAME? 0= ;
 ```
-Marking the frame as closed can be done by setting the frame state to zero, and advancing the frame count.
+The player "closes" the frame when she delivers a strike at first roll, or delivers the second roll.  Marking the frame as closed can be done by setting the frame state to zero, and advancing the frame count.
 ```forth
-: CLOSE-FRAME!
-    0 FRAME-STATE ! FRAME> ;
+: CLOSE-FRAME
+    0 FRAME ! FRAME#++ ;
 ```
-Opening the frame can be done by setting its value to the last roll + 1,since the value of the last roll can be comprised between 0 and 9. Symmetrically, the last roll can be retrieved by subtracting 1 from the frame state value.
+The player "opens" the frame when the first roll is not a strike. Then we have to remember the value of this roll, and set the frame state to *open*, i.e not zero. Let's add 1 to the roll value, and use it as the frame state: since the roll value can be a number from 0 to 10, a frame state value between 1 and 10 means the frame is open and the last roll value = the frame state value minus 1.
 ```forth
-: OPEN-FRAME! ( #pins -- )
-    1+ FRAME-STATE ! ;
+\ open frame, saving the first roll value+1
+: OPEN-FRAME ( #pins -- )
+    1+ FRAME ! ;
 
+\ retrieve the first roll value
 : LAST-ROLL ( -- #pins )
-    FRAME-STATE @ 1- ;
+    FRAME @ 1- ;
+```
+Again, we need to initialize the frame state before the game starts.
+```forth
+    \ initialize all variables
+    : START
+        0 SCORE !
+        0 BONUS !
+        0 FRAME# !
+        0 FRAME-STATE ! ;
+```
+And now we can try our definitions.
+```forth
+    START NEW-FRAME? .  ⏎
+    -1 ok
+    7 OPEN-FRAME NEW-FRAME? . OPEN-FRAME? . LAST-ROLL .  ⏎
+    0 -1 7 ok
+    3 OPEN-FRAME CLOSE-FRAME NEW-FRAME? .  ⏎
+    -1 ok
 ```
 ### Checking for Bonus
-We have a strike if the frame is a new frame and the roll is a 10. In that case, add points to the bonus and close the frame.
+So far, we have a words to collect the bonus, declare a strike or a spare,  and set the frame state. Now we can qualify the roll value that has been delivered:
+
+We have a strike if the roll is a 10 *and* we are in a new frame. In that case, add points to the bonus and close the frame.
 
 If the frame is new but we don't have a strike then open the frame, saving the roll value.
 
-If the frame is open and the roll added to the previous one makes a 10, we have a spare.
+We have a spare If the frame is open and the roll added to the previous one makes a 10.
 
 If the frame is open, wether we have a spare or not we have to close the frame.
+
+<p align="center"> <img src="/images/checkbonus.png" width="75%" /> </p>
+
+Hence the words:
 ```forth
 : CHECK-STRIKE ( #pins -- )
-    DUP 10 = IF STRIKE! CLOSE-FRAME! ELSE OPEN-FRAME! THEN ;
+    DUP 10 = IF
+        STRIKE CLOSE-FRAME
+    ELSE
+        OPEN-FRAME
+    THEN ;
 
 : CHECK-SPARE ( #pins -- )
-    LAST-ROLL + 10 = IF SPARE! THEN CLOSE-FRAME! ;
+    LAST-ROLL + 10 = IF
+        SPARE
+    THEN
+    CLOSE-FRAME ;
 
 : CHECK-BONUS ( #pins -- )
-    NEW-FRAME? IF CHECK-STRIKE ELSE CHECK-SPARE THEN ;
+    NEW-FRAME? IF 
+        CHECK-STRIKE 
+    ELSE 
+        CHECK-SPARE 
+    THEN ;
 ```
 ### Adding a Roll to the Current Score
 We are almost done. Adding a roll to the game will execute these tasks of collecting bonus, adding the roll points to the score, checking for new bonus, and advancing the frame count.
@@ -262,10 +276,10 @@ To get a number, we have to read the input stream character by character, skippi
 
 The standard word `DIGIT? ( char -- n,-1|0 )` returns *false* if the character on the stack is not a digit, or *true*, preceded with the matching digit otherwise.
 ```forth
-32 DIGIT? . ⏎
-0 ok
-50 DIGIT? . .  ⏎
--1 2 ok
+CHAR # DUP . DIGIT? .  ⏎
+35 0  ok
+CHAR 2 DUP . DIGIT? . .   ⏎
+50 -1 2  ok
 ```
 Here's a word to skip all input characters until a digit is met:
 ```forth
@@ -330,33 +344,42 @@ Et voilà!
 
 # The Program
 ```forth
-VARIABLE SCORE VARIABLE BONUS VARIABLE FRAME-STATE VARIABLE FRAME#
+VARIABLE SCORE
+VARIABLE BONUS
+VARIABLE FRAME-STATE
+VARIABLE FRAME#
 
-: START 0 SCORE ! 0 BONUS ! 0 FRAME-STATE ! 0 FRAME# ! ;
+: START
+    0 SCORE ! 0 BONUS ! 0 FRAME-STATE ! 0 FRAME# ! ;
 
-: SPARE! 1 BONUS ! ;
-: STRIKE! BONUS @ 1+ 4 OR BONUS ! ;
+: SPARE 1 BONUS ! ;
+
+: STRIKE BONUS @ 1+ 4 OR BONUS ! ;
 
 : BONUS> ( -- factor )
     BONUS @ DUP 3 AND
     SWAP 2 RSHIFT BONUS ! ;
 
+: FRAME>
+    FRAME# @ 1+ 10 MIN FRAME# ! ;
+
 : COLLECT-BONUS ( #pins -- ) BONUS> * SCORE +! ;
 
-: CLOSE-FRAME!  0 FRAME-STATE ! ;
-: OPEN-FRAME! ( #pins -- ) 1+ FRAME-STATE ! ;
 : OPEN-FRAME? ( -- flag ) FRAME-STATE @ ;
-: NEW-FRAME? ( -- flag ) OPEN-FRAME? 0= ;
-: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1 - ;
 
-: FRAME>
-    NEW-FRAME? IF FRAME# @ 1+ 10 MIN FRAME# ! THEN ;
+: NEW-FRAME? ( -- flag ) OPEN-FRAME? 0= ;
+
+: CLOSE-FRAME!  0 FRAME-STATE ! FRAME> ;
+
+: OPEN-FRAME! ( #pins -- ) 1+ FRAME-STATE ! ;
+
+: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1- ;
 
 : CHECK-STRIKE ( #pins -- )
-    DUP 10 = IF STRIKE! CLOSE-FRAME! ELSE OPEN-FRAME! THEN ;
+    DUP 10 = IF STRIKE CLOSE-FRAME! ELSE OPEN-FRAME! THEN ;
 
 : CHECK-SPARE ( #pins -- )
-    LAST-ROLL + 10 = IF SPARE! THEN CLOSE-FRAME! ;
+    LAST-ROLL + 10 = IF SPARE THEN CLOSE-FRAME! ;
 
 : CHECK-BONUS ( #pins -- )
     NEW-FRAME? IF CHECK-STRIKE ELSE CHECK-SPARE THEN ;
@@ -364,9 +387,8 @@ VARIABLE SCORE VARIABLE BONUS VARIABLE FRAME-STATE VARIABLE FRAME#
 : ROLL+ ( #pins -- )
     DUP COLLECT-BONUS
     FRAME# @ 0 10 WITHIN IF
-        DUP CHECK-BONUS
-        SCORE +!
-        FRAME>
+        DUP SCORE +!
+        CHECK-BONUS
     THEN ;
 
 : SKIP-NON-DIGIT ( -- d )
@@ -390,5 +412,5 @@ VARIABLE SCORE VARIABLE BONUS VARIABLE FRAME-STATE VARIABLE FRAME#
 
 BOWLING
 BYE
-
 ```
+
