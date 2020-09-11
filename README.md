@@ -68,7 +68,9 @@ This is basically what our program has to do when receiving a value from the inp
         THEN ;
 ```
 ### Bonus
-The bonus mechanism is like a dispenser: we feed it with bonus points gained from a strike or a spare, and these bonus points get used as a factor for extra score each time a new roll is added to the game. Once the bonus for a roll is consumed, the bonus dispenser prepares the next value to be used. Here is the pseudo code, followed by the expected effect on the stack.
+The bonus works like a dispenser mechanism: we feed it with bonus points gained from a strike or a spare, and these bonus points get used as a factor for extra score each time a new roll is added to the game. Once the bonus for a roll is consumed, the dispenser prepares the next value to be used. 
+![bonus](./images/bonus.png) {: width="50px"}
+Here is the pseudo code, followed by the expected effect on the stack.
 ```forth
     : STRIKE! ( feeds the bonus dispenser with new points ) … ;
     : SPARE!  ( feeds the bonus dispenser with a point ) … ;
