@@ -14,20 +14,20 @@ VARIABLE FRAME#
     BONUS @ DUP 3 AND
     SWAP 2 RSHIFT BONUS ! ;
 
+: FRAME>
+    FRAME# @ 1+ 10 MIN FRAME# ! ;
+
 : COLLECT-BONUS ( #pins -- ) BONUS> * SCORE +! ;
-
-: CLOSE-FRAME!  0 FRAME-STATE ! ;
-
-: OPEN-FRAME! ( #pins -- ) 1+ FRAME-STATE ! ;
 
 : OPEN-FRAME? ( -- flag ) FRAME-STATE @ ;
 
 : NEW-FRAME? ( -- flag ) OPEN-FRAME? 0= ;
 
-: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1- ;
+: CLOSE-FRAME!  0 FRAME-STATE ! FRAME> ;
 
-: FRAME>
-    NEW-FRAME? IF FRAME# @ 1+ 10 MIN FRAME# ! THEN ;
+: OPEN-FRAME! ( #pins -- ) 1+ FRAME-STATE ! ;
+
+: LAST-ROLL ( -- #pins ) FRAME-STATE @ 1- ;
 
 : CHECK-STRIKE ( #pins -- )
     DUP 10 = IF STRIKE! CLOSE-FRAME! ELSE OPEN-FRAME! THEN ;
@@ -40,10 +40,9 @@ VARIABLE FRAME#
 
 : ROLL+ ( #pins -- )
     DUP COLLECT-BONUS
-    FRAME# @ 0 10 WITHIN IF
-        DUP CHECK-BONUS
-        SCORE +!
-        FRAME>
+    FRAME# @ 0 10 WITHIN IF 
+        DUP SCORE +!  
+        CHECK-BONUS 
     THEN ;
 
 : SKIP-NON-DIGIT ( -- d )
