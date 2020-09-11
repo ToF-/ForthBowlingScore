@@ -77,6 +77,7 @@ This is basically what our program has to do when receiving a value from the inp
 The bonus works like a dispenser mechanism: we feed it with bonus points gained from a strike or a spare, and these bonus points get used as a factor for extra score each time a new roll is added to the game. Once the bonus for a roll is consumed, the dispenser prepares the next value to be used. 
 <p align="center"> <img src="/images/bonus.png" width="33%" /> </p>
 Here is the pseudo code, followed by the expected effect on the stack.
+
 ```forth
     : STRIKE! ( feeds the bonus dispenser with new points ) … ;
     : SPARE!  ( feeds the bonus dispenser with a point ) … ;
@@ -97,6 +98,7 @@ Here is the pseudo code, followed by the expected effect on the stack.
 ### Frame State
 When adding a roll to the game, how can we know if that roll is part of an open frame or if it starts a new frame? We have to keep track of the current frame state. If the state is open, then we should be able to retrieve the first roll value from this frame.
 <p align="center"> <img src="/images/framestate.png" width="33%" /> </p>
+
 ```forth
     : OPEN-FRAME! ( #pins -- ) ( marks the frame as open and keeps the roll value ) … ;
     : OPEN-FRAME? ( -- flag ) ( trues if the frame is open ) … ;
