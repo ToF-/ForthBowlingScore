@@ -178,7 +178,8 @@ A frame is either a new frame, meaning the player hasn't thrown a roll yet, or a
 : NEW-FRAME? ( -- flag )
     OPEN-FRAME? 0= ;
 ```
-Marking the frame as closed can be done by setting the frame state to zero, and advancing the frame count. ```forth
+Marking the frame as closed can be done by setting the frame state to zero, and advancing the frame count.
+```forth
 : CLOSE-FRAME!
     0 FRAME-STATE ! FRAME> ;
 ```
