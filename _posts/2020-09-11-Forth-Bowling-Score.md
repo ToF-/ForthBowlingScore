@@ -96,9 +96,7 @@ Here is the pseudo code, followed by the expected effect on the stack.
 ```
 ### Frame State
 When adding a roll to the game, how can we know if that roll is part of an open frame or if it starts a new frame? We have to keep track of the current frame state. If the state is open, then we should be able to retrieve the first roll value from this frame.
-
 <p align="center"> <img src="/images/framestate.png" width="33%" /> </p>
-
 ```forth
     : OPEN-FRAME! ( #pins -- ) ( marks the frame as open and keeps the roll value ) … ;
     : OPEN-FRAME? ( -- flag ) ( trues if the frame is open ) … ;
