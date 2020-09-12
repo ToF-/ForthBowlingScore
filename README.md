@@ -1,3 +1,11 @@
 # The bowling score kata
 
-see `_posts`
+see http://christophethibaut.com/
+
+    make unit
+
+runs the unit tests
+
+    make test
+
+runs integration test
