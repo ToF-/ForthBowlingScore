@@ -1,11 +1,11 @@
 # The bowling score kata
 
-see http://christophethibaut.com/
+see [blog post](http://christophethibaut.com/programming/2020/09/12/Forth-Bowling-Score.html)
 
     make unit
 
-runs the unit tests
+will run the unit tests
 
     make test
 
-runs integration test
+will run integration test
