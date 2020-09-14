@@ -78,11 +78,12 @@ This is basically what our main routine will have to do when given a value on th
 
 ### Keeping the Score
 The first thing we obviously need is a variable to memorize the player's score. Since that variable needs to be initialized, let's also create a definition to that effect:
+<html>
 <pre style="color:#000000;background:#ffffff;"><span style="color:#800000; font-weight:bold; ">VARIABLE</span> <span style="color:#800000; font-weight:bold; ">SCORE</span>
 
 <span style="color:#800000; font-weight:bold; ">:</span> <span style="color:#800000; font-weight:bold; ">START</span>
     <span style="color:#008c00; ">0</span> SCORE <span style="color:#800000; font-weight:bold; ">!</span><span style="color:#800000; font-weight:bold; "> ;</span>
-</pre>
+</pre></html>
 Surely we will need to amend this definition to include several other variables.
 
 ### Bonus
